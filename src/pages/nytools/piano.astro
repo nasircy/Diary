@@ -50,6 +50,88 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     font-size: 0.95rem;
   }
 
+  .features {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.15s both;
+  }
+
+  .features h3 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text);
+  }
+
+  .features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .features li {
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    line-height: 1.6;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .features li::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    margin-top: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  .how-to-use {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.2s both;
+  }
+
+  .how-to-use h3 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    margin: 0 0 1rem 0;
+    color: var(--color-text);
+  }
+
+  .how-to-use .role {
+    margin-bottom: 1rem;
+  }
+
+  .how-to-use .role:last-child {
+    margin-bottom: 0;
+  }
+
+  .how-to-use .role h4 {
+    font-size: 0.85rem;
+    font-family: var(--font-heading);
+    margin: 0 0 0.4rem 0;
+    color: var(--color-accent);
+  }
+
+  .how-to-use .role ol {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    line-height: 1.7;
+  }
+
   .mode-selector {
     display: flex;
     gap: 1rem;
@@ -250,6 +332,35 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <div class="page-header">
     <h1>NYPIANO</h1>
     <p>即時點播小工具 — 聽眾點歌、演奏者即時接收</p>
+  </div>
+
+  <div class="features">
+    <h3>功能特色</h3>
+    <ul>
+      <li>即時歌單同步 — 透過 PeerJS P2P 連線，所有播放清單與演奏狀態即時同步到聽眾手機</li>
+      <li>純前端部署 — 100% GitHub Pages 託管，即開即用，無需後端伺服器</li>
+      <li>管理員即時接收 — 演奏者端像點唱機一樣，即時收到所有點歌請求</li>
+    </ul>
+  </div>
+
+  <div class="how-to-use">
+    <h3>使用方法</h3>
+    <div class="role">
+      <h4>聽眾</h4>
+      <ol>
+        <li>選擇「聽眾」模式</li>
+        <li>輸入想聽的歌名並送出</li>
+        <li>歌單即時同步到演奏者畫面</li>
+      </ol>
+    </div>
+    <div class="role">
+      <h4>演奏者 (Admin)</h4>
+      <ol>
+        <li>選擇「演奏者」模式</li>
+        <li>實時收到所有點歌請求</li>
+        <li>完成演奏後點擊「完成」即可移除該項</li>
+      </ol>
+    </div>
   </div>
 
   <div id="modeSelect" class="mode-selector">

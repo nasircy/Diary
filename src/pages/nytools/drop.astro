@@ -39,6 +39,73 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     font-size: 0.95rem;
   }
 
+  .features {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.15s both;
+  }
+
+  .features h3 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text);
+  }
+
+  .features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .features li {
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    line-height: 1.6;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .features li::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    margin-top: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  .how-to-use {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.2s both;
+  }
+
+  .how-to-use h3 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text);
+  }
+
+  .how-to-use ol {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    line-height: 1.8;
+  }
+
   .mode-selector {
     display: flex;
     gap: 1rem;
@@ -328,6 +395,25 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <div class="page-header">
     <h1>NY DROP</h1>
     <p>P2P 檔案傳輸 — 6 位數代碼配對，點對點直接傳送</p>
+  </div>
+
+  <div class="features">
+    <h3>功能特色</h3>
+    <ul>
+      <li>純前端架構 — 100% Client-Side，透過 PeerJS 進行信令交換，無需後端伺服器</li>
+      <li>無伺服器儲存 — 檔案直接從 A 電腦傳送到 B 電腦，無容量限制，隱私安全滿分</li>
+      <li>跨平台 — 基於 Web 技術，支援電腦、手機、平板等任何現代瀏覽器</li>
+    </ul>
+  </div>
+
+  <div class="how-to-use">
+    <h3>使用方法</h3>
+    <ol>
+      <li>其中一方選擇「建立房間」，產生 6 位數房間代碼</li>
+      <li>將代碼分享給對方</li>
+      <li>對方選擇「加入房間」，輸入代碼後瞬間建立加密隧道</li>
+      <li>拖曳檔案到傳送區即可開始傳輸</li>
+    </ol>
   </div>
 
   <div id="modeSelect" class="mode-selector">

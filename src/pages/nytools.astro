@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <style>
@@ -34,8 +34,31 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   .hero p {
     color: var(--color-muted);
     font-size: 1.05rem;
-    max-width: 480px;
+    max-width: 520px;
     margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .intro {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    animation: fadeIn 0.6s ease-out 0.2s both;
+  }
+
+  .intro p {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    line-height: 1.8;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .intro strong {
+    color: var(--color-text);
   }
 
   .tools-grid {
@@ -131,6 +154,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       <p>一套基於 P2P 技術的即時工具集，免安裝、免登入、開網頁就能用</p>
     </div>
 
+    <div class="intro">
+      <p>所有工具皆採用 <strong>WebRTC</strong> 與 <strong>PeerJS</strong> 實現，完全無伺服器架構。資料在瀏覽器之間點對點直接傳送，確保隱私與即時性。只需一個 GitHub Pages 連結即可運行。</p>
+    </div>
+
     <div class="tools-grid">
       <a href="/Diary/nytools/chat" class="tool-card">
         <div class="icon">
@@ -139,7 +166,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           </svg>
         </div>
         <h3>NY CHAT</h3>
-        <p>P2P 分散式客服排隊系統，多櫃台平行自動排隊，即時加密對話</p>
+        <p>P2P 分散式客服排隊系統。客人自動掃描所有空閒櫃台，任一櫃台空出即瞬間接通。支援多客服同時在線，WebRTC 點對點加密傳輸。</p>
         <span class="tag">WebRTC</span>
       </a>
 
@@ -150,7 +177,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           </svg>
         </div>
         <h3>NY DROP</h3>
-        <p>P2P 檔案傳輸，6 位數代碼配對，點對點直接傳送，隱私安全</p>
+        <p>P2P 檔案傳輸工具。透過 6 位數代碼快速配對，檔案直接從 A 電腦傳送到 B 電腦，無伺服器儲存、無容量限制，隱私安全滿分。</p>
         <span class="tag">P2P Transfer</span>
       </a>
 
@@ -163,7 +190,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           </svg>
         </div>
         <h3>NYPIANO</h3>
-        <p>即時點播小工具，聽眾點歌、演奏者即時接收，同步歌單狀態</p>
+        <p>即時點播小工具。聽眾透過 P2P 連線點歌，演奏者即時收到所有點歌請求。同步顯示歌單與演奏狀態，純前端部署。</p>
         <span class="tag">Real-time</span>
       </a>
 
@@ -176,7 +203,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           </svg>
         </div>
         <h3>NY Screen</h3>
-        <p>投影神器，免安裝免登入，開網頁即用，支援全螢幕顯示</p>
+        <p>投影神器。免安裝、免登入、免配對碼，開網頁就能投影。支援全螢幕顯示，使用 PeerJS + STUN/TURN 跨網段連線。</p>
         <span class="tag">Screen Share</span>
       </a>
     </div>

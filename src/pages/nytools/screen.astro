@@ -39,6 +39,100 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     font-size: 0.95rem;
   }
 
+  .features {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.15s both;
+  }
+
+  .features h3 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text);
+  }
+
+  .features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .features li {
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    line-height: 1.6;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .features li::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    margin-top: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  .how-to-use {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.2s both;
+  }
+
+  .how-to-use h3 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text);
+  }
+
+  .how-to-use ol {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    line-height: 1.8;
+  }
+
+  .note {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.25s both;
+  }
+
+  .note h3 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text);
+  }
+
+  .note p {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    line-height: 1.7;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .note p:last-child {
+    margin-bottom: 0;
+  }
+
   .mode-selector {
     display: flex;
     gap: 1rem;
@@ -299,6 +393,32 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <div class="page-header">
     <h1>NY Screen</h1>
     <p>投影神器 — 免安裝免登入，開網頁即用</p>
+  </div>
+
+  <div class="features">
+    <h3>功能特色</h3>
+    <ul>
+      <li>自動網路檢查 — 基本頻寬與延遲偵測，確保連線品質</li>
+      <li>多房 1 對 1 — 每組獨立代碼，不同裝置互不干擾</li>
+      <li>支援全螢幕顯示 — 投影端一鍵全螢幕</li>
+      <li>PeerJS + STUN/TURN — 使用 Google STUN、Cloudflare STUN、Cloudflare TURN，跨網段連線成功率更高</li>
+    </ul>
+  </div>
+
+  <div class="how-to-use">
+    <h3>使用方法</h3>
+    <ol>
+      <li>選擇「接收端」或「發送端」</li>
+      <li>接收端：設定房間代碼後按「開啟接收房間」，可點「複製連結」把帶有 room 參數的網址傳給發送端</li>
+      <li>發送端：輸入同一組房間代碼並按「連線房間」</li>
+      <li>發送端按「開始投影」，選要分享的畫面</li>
+    </ol>
+  </div>
+
+  <div class="note">
+    <h3>注意事項</h3>
+    <p>同一個房間代碼不能同時開兩個接收端；若房間被占用，請換代碼或關閉舊頁面。</p>
+    <p>第一次分享螢幕時，瀏覽器會跳出權限視窗，記得允許。</p>
   </div>
 
   <div id="modeSelect" class="mode-selector">
