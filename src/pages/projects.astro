@@ -13,9 +13,33 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </article>
 
     <article>
-      <h3><a href="https://github.com/nasircy/ntub2026ITAudit" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">NTUB 2026 資安稽核一條龍</a></h3>
-      <p>專為 NTUB 2026 通識教育中心資安稽核打造的一鍵式全自動檢測工具 — 自動檢查系統版本、重置更新服務、停用內建帳號、強制更新軟體，一鍵搞定所有稽核項目。</p>
-      <p><a href={`/Diary/files/NTUB_Audit.zip`}>📥 下載 NTUB_Audit.zip</a></p>
+      <h3><a href="https://github.com/nasircy/ntub2026ITAudit" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">NTUB 2026 通識資安稽核一條龍</a></h3>
+      <p>為了符合國家資安稽核的指標，並加速檢測流程的進度，特別做這個一鍵式全自動資安檢測工具！</p>
+
+      <h4>功能說明</h4>
+      <ul>
+        <li><strong>版本檢查</strong>：自動讀取系統版本，針對舊版 Windows 10（低於 22H2）提示重大資安風險，並建議後續升級。</li>
+        <li><strong>更新服務重置</strong>：強制清除 Windows Update 損壞快取，重新啟動更新服務，並在背景調用。</li>
+        <li><strong>取消密碼永久有效</strong>：自動檢查本機所有帳號，強制取消「密碼永久有效」設定，落實定期變更密碼之稽核要點。</li>
+        <li><strong>Admin 與 Guest 帳號</strong>：精準鎖定本機內建最高權限 Administrator 與 Guest 帳號，若偵測為啟用狀態則強制停用，防止被惡意掃描或利用。</li>
+        <li><strong>四大重點軟體檢查</strong>：偵測系統中是否安裝 Google Chrome、Microsoft Edge、Adobe Acrobat Reader 及 Java。</li>
+        <li><strong>背景更新</strong>：自動使用 Windows 內建 winget 軟體包管理器，在背景強制執行靜默升級至最新安全版本。</li>
+      </ul>
+
+      <h4>使用步驟</h4>
+      <ol>
+        <li>下載並解壓縮程式檔</li>
+        <li>以系統管理員身分執行 NTUB_Audit.bat</li>
+        <li>按下【是】後，不要動讓他跑！</li>
+        <li>執行完畢與確認</li>
+      </ol>
+
+      <h4>為什麼要做這個工具？</h4>
+      <p>在通識中心處理的過程中，發現流程卡最久的部分是在於修改密碼永久選項及更新系統和軟體部分。為了加快整體處理與檢查的進度，特別製作這個一鍵式整合工具，目的就是希望能夠通過稽核，以及校園檢查過程中流程能夠更順利。</p>
+
+      <p><strong>建議：</strong>由於很多軟體都一直在不定時更新，系統也是，建議在正式稽核的前幾天，將此程式重新開啟執行一次，確保所有的安全性或是應用程式都是在最新狀態。</p>
+
+      <p><a href={`/Diary/files/NTUB_Audit.zip`}>📥 下載 NTUB_Audit.zip</a>（下載後務必先解壓縮再執行）</p>
     </article>
   </section>
 </BaseLayout>
