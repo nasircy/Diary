@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="考古刷題">
+  <section>
+    <h1>考古刷題</h1>
+    <p style="color: var(--color-muted); margin-bottom: 2rem;">歷屆考題練習 — 點選直接開始刷題</p>
+
+    <div class="quiz-section">
+      <h2>AI 應用規劃師</h2>
+      <p style="color: var(--color-muted); margin-bottom: 1.25rem;">iPAS 初級 AI 應用規劃師歷屆試題與模擬考</p>
+
+      <div class="quiz-grid">
+        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-official-1" target="_blank" rel="noopener" class="quiz-card">
+          <div class="quiz-badge official">115年</div>
+          <h3>第一科 — 人工智慧基礎概論</h3>
+          <p>115年第一次初級 AI 應用規劃師</p>
+        </a>
+        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-official-2" target="_blank" rel="noopener" class="quiz-card">
+          <div class="quiz-badge official">115年</div>
+          <h3>第二科 — 生成式 AI 應用與規劃</h3>
+          <p>115年第一次初級 AI 應用規劃師</p>
+        </a>
+        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-114-t4-k1" target="_blank" rel="noopener" class="quiz-card">
+          <div class="quiz-badge">114年第四梯次</div>
+          <h3>第一科 — 人工智慧基礎概論</h3>
+          <p>114年第四梯次初級 AI 應用規劃師</p>
+        </a>
+        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-114-t4-k2" target="_blank" rel="noopener" class="quiz-card">
+          <div class="quiz-badge">114年第四梯次</div>
+          <h3>第二科 — 生成式 AI 應用與規劃</h3>
+          <p>114年第四梯次初級 AI 應用規劃師</p>
+        </a>
+        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-march-k1" target="_blank" rel="noopener" class="quiz-card">
+          <div class="quiz-badge">3月考題</div>
+          <h3>科目一 — 人工智慧基礎概論</h3>
+          <p>3月模擬考題</p>
+        </a>
+        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-march-k2" target="_blank" rel="noopener" class="quiz-card">
+          <div class="quiz-badge">3月考題</div>
+          <h3>科目二 — 生成式 AI 應用與規劃</h3>
+          <p>3月模擬考題</p>
+        </a>
+        <a href="https://pastpapers.nasirlin.net/?bank=ipas-ai-planner-sample-114" target="_blank" rel="noopener" class="quiz-card">
+          <div class="quiz-badge sample">樣題</div>
+          <h3>iPAS 考試樣題</h3>
+          <p>114年9月版官方樣題</p>
+        </a>
+      </div>
+    </div>
+
+    <div class="quiz-section">
+      <h2>其他考卷</h2>
+      <p style="color: var(--color-muted); margin-bottom: 1.25rem;">綜合測驗與專題練習</p>
+
+      <div class="quiz-grid">
+        <a href="https://pastpapers.nasirlin.net/?bank=general-quiz" target="_blank" rel="noopener" class="quiz-card">
+          <div class="quiz-badge other">綜合</div>
+          <h3>一般測驗</h3>
+          <p>綜合知識練習</p>
+        </a>
+        <a href="https://pastpapers.nasirlin.net/?bank=web-frontend" target="_blank" rel="noopener" class="quiz-card">
+          <div class="quiz-badge other">前端</div>
+          <h3>前端技術</h3>
+          <p>Web Frontend 測驗</p>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .quiz-section {
+    margin-bottom: 3rem;
+  }
+
+  .quiz-section h2 {
+    font-size: 1.5rem;
+    font-family: var(--font-heading);
+    margin-bottom: 0.25rem;
+  }
+
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .quiz-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .quiz-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .quiz-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .quiz-card p {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  .quiz-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: var(--color-border);
+    color: var(--color-muted);
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .quiz-badge.official {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .quiz-badge.sample {
+    background: #10b981;
+    color: white;
+  }
+
+  .quiz-badge.other {
+    background: #6366f1;
+    color: white;
+  }
+</style>
