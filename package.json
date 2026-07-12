@@ -9,6 +9,11 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^5.7.0"
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
+    "astro": "^5.7.0",
+    "hls.js": "^1.6.16",
+    "idb": "^8.0.3",
+    "sweetalert2": "^11.26.25"
   }
 }

@@ -1,0 +1,600 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="羊家門前有相機 📷">
+  <div class="cctv-app">
+    <div class="cctv-splash" id="cctv-splash">
+      <div class="splash-cam" aria-hidden="true">
+        <svg class="cam-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect class="cam-body" x="14" y="28" width="52" height="32" rx="4" stroke="currentColor" stroke-width="1.5"/>
+          <path class="cam-arm" d="M40 28V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path class="cam-mount" d="M32 18H48" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle class="cam-lens-outer" cx="40" cy="44" r="12" stroke="currentColor" stroke-width="1.5"/>
+          <circle class="cam-lens-inner" cx="40" cy="44" r="6" stroke="currentColor" stroke-width="1.2" opacity="0.7"/>
+          <circle class="cam-lens-core" cx="40" cy="44" r="2.5" fill="currentColor"/>
+          <circle class="cam-led" cx="58" cy="34" r="2" fill="#e04040"/>
+          <path class="cam-sunshade" d="M22 36H18V48" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="splash-osd">SYS BOOT</div>
+      <div class="splash-title">羊家門前有相機</div>
+      <div class="splash-bar"><span></span></div>
+    </div>
+
+    <div class="cctv-hdr">
+      <div class="hdr-brand">
+        <span class="hdr-rec-dot" id="cctv-hdr-rec-dot"></span>
+        <h1 class="hdr-title">羊家門前有相機 📷</h1>
+      </div>
+      <div class="hdr-status">
+        <span class="sig" id="cctv-sig-dot"></span>
+        <span class="sig-txt" id="cctv-sig-txt">連線中</span>
+      </div>
+      <div class="hdr-clock" id="cctv-clock">00:00:00</div>
+    </div>
+
+    <div class="cctv-cors-warn" id="cctv-cors-warn">
+      直播來源可能因跨域限制無法載入，請使用 Chrome 或 Edge。
+    </div>
+
+    <div class="cctv-layout">
+      <section class="cctv-main">
+        <div class="bezel" id="cctv-bezel">
+          <div class="bezel-inner">
+            <div class="viewport" id="cctv-viewport">
+              <div class="video-stage" id="cctv-video-stage">
+                <video id="cctv-live-video" autoplay muted playsinline crossorigin="anonymous"></video>
+              </div>
+
+              <div class="osd osd-tl">
+                <span class="osd-live">● LIVE</span>
+                <span class="osd-rec" id="cctv-osd-rec">● REC</span>
+              </div>
+              <div class="osd osd-tr">
+                <span class="osd-ch">CH01</span>
+                <span class="osd-ts" id="cctv-live-ts">00:00:00</span>
+              </div>
+              <div class="osd osd-bl">
+                <span class="osd-zoom-lvl" id="cctv-zoom-lvl">1.0×</span>
+              </div>
+
+              <div class="frame-load hide" id="cctv-player-spin">
+                <div class="load-ring"></div>
+                <span>SIGNAL ACQUIRING</span>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="zoom-group">
+                <span class="tb-label">ZOOM</span>
+                <button class="tb-btn on" data-zoom="1">1×</button>
+                <button class="tb-btn" data-zoom="1.5">1.5×</button>
+                <button class="tb-btn" data-zoom="2">2×</button>
+                <button class="tb-btn" data-zoom="3">3×</button>
+              </div>
+              <div class="tb-actions">
+                <button class="tb-btn" id="cctv-btn-fit" title="重置">重置</button>
+                <button class="tb-btn tb-fs" id="cctv-btn-fs">全螢幕</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="cctv-panel">
+        <div class="panel-block">
+          <div class="panel-row">
+            <button class="btn-rec" id="cctv-rec-btn">● REC 開始</button>
+            <span class="rec-time" id="cctv-rec-timer"></span>
+          </div>
+          <div class="rec-hint" id="cctv-rec-status">STBY · 待機</div>
+        </div>
+
+        <div class="panel-block stats">
+          <div class="stat">
+            <span class="stat-n" id="cctv-st-total">0</span>
+            <span class="stat-l">TOTAL</span>
+          </div>
+          <div class="stat">
+            <span class="stat-n" id="cctv-st-today">0</span>
+            <span class="stat-l">TODAY</span>
+          </div>
+        </div>
+
+        <div class="panel-block grow">
+          <div class="panel-hd">PLAYBACK LOG</div>
+          <div class="date-list" id="cctv-date-list">
+            <div class="empty">—</div>
+          </div>
+          <div class="file-list" id="cctv-dvr-files">
+            <div class="empty">選擇日期</div>
+          </div>
+        </div>
+
+        <div class="panel-block stor">
+          <span class="stor-lbl">LOCAL</span>
+          <div class="stor-track"><div class="stor-fill" id="cctv-stor-fill"></div></div>
+          <span class="stor-val" id="cctv-stor-val">—</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <style is:global>
+    /* ── CCTV App Scoped Styles ── */
+    .cctv-app {
+      --cctv-bg: #0e0e0c;
+      --cctv-surface: #141412;
+      --cctv-panel: #111110;
+      --cctv-line: #2a2a26;
+      --cctv-line2: #3a3a34;
+      --cctv-text: #d8d4cc;
+      --cctv-dim: #8a867c;
+      --cctv-mute: #5c5a54;
+      --cctv-green: #6b8f71;
+      --cctv-green-dim: rgba(107, 143, 113, 0.1);
+      --cctv-red: #a84848;
+      --cctv-red-dim: rgba(168, 72, 72, 0.1);
+      --cctv-font: 'Noto Serif TC', 'Source Han Serif TC', serif;
+
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 60px);
+      background: var(--cctv-bg);
+      color: var(--cctv-text);
+      font-family: var(--cctv-font);
+      overflow: hidden;
+      margin: 0 -1.5rem;
+      padding: 0;
+    }
+
+    .cctv-app *, .cctv-app *::before, .cctv-app *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Splash ── */
+    .cctv-splash {
+      position: absolute;
+      inset: 0;
+      z-index: 9999;
+      background: var(--cctv-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      transition: opacity 0.45s, visibility 0.45s;
+    }
+    .cctv-splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .splash-cam {
+      color: var(--cctv-green);
+      animation: cctv-cam-in 0.6s ease both;
+    }
+    .cam-svg { width: 64px; height: 64px; display: block; }
+    .cam-led { animation: cctv-rec-blink 1.2s step-end infinite; }
+
+    @keyframes cctv-cam-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .splash-osd {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--cctv-mute);
+    }
+    .splash-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--cctv-text);
+    }
+    .splash-bar {
+      width: 88px;
+      height: 1px;
+      background: var(--cctv-line);
+      overflow: hidden;
+    }
+    .splash-bar span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--cctv-green);
+      animation: cctv-boot 1.5s ease forwards;
+    }
+    @keyframes cctv-boot { to { width: 100%; } }
+
+    /* ── Header ── */
+    .cctv-hdr {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 16px;
+      background: var(--cctv-surface);
+      border-bottom: 1px solid var(--cctv-line);
+      flex-shrink: 0;
+    }
+    .hdr-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .hdr-rec-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cctv-mute);
+      flex-shrink: 0;
+      display: none;
+    }
+    .hdr-rec-dot.show {
+      display: block;
+      background: var(--cctv-red);
+      animation: cctv-rec-blink 1s step-end infinite;
+    }
+    .hdr-title {
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hdr-status {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sig {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cctv-mute);
+    }
+    .sig.on { background: var(--cctv-green); }
+    .sig.off { background: var(--cctv-red); animation: cctv-rec-blink 0.8s step-end infinite; }
+    .sig-txt { font-size: 11px; color: var(--cctv-dim); }
+    .hdr-clock {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--cctv-text);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes cctv-rec-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    /* ── Layout ── */
+    .cctv-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      min-height: 0;
+      flex: 1;
+    }
+    .cctv-cors-warn {
+      display: none;
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--cctv-dim);
+      background: var(--cctv-surface);
+      border-bottom: 1px solid var(--cctv-line);
+    }
+    .cctv-cors-warn.show { display: block; }
+
+    /* ── Monitor ── */
+    .cctv-main {
+      padding: 10px;
+      min-height: 0;
+      display: flex;
+    }
+
+    .bezel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      background: var(--cctv-surface);
+      border: 1px solid var(--cctv-line);
+      padding: 8px;
+    }
+    .bezel:fullscreen { padding: 0; background: #000; border: none; }
+    .bezel:fullscreen .toolbar { display: none; }
+    .bezel:fullscreen .bezel-inner { border: none; }
+
+    .bezel-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      border: 1px solid var(--cctv-line);
+      background: #000;
+    }
+
+    .viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+      background: #000;
+      cursor: default;
+    }
+    .viewport.can-pan { cursor: grab; }
+    .viewport.can-pan.dragging { cursor: grabbing; }
+
+    .video-stage {
+      width: 100%;
+      height: 100%;
+      transform-origin: center center;
+    }
+    .video-stage video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* OSD */
+    .osd {
+      position: absolute;
+      z-index: 6;
+      font-size: 12px;
+      pointer-events: none;
+    }
+    .osd-tl { top: 10px; left: 12px; display: flex; gap: 10px; }
+    .osd-tr { top: 10px; right: 12px; text-align: right; display: flex; flex-direction: column; gap: 2px; }
+    .osd-bl { bottom: 10px; left: 12px; }
+    .osd-live { color: var(--cctv-red); font-weight: 600; font-size: 11px; }
+    .osd-rec {
+      color: var(--cctv-red);
+      display: none;
+      font-size: 11px;
+      animation: cctv-rec-blink 1s step-end infinite;
+    }
+    .osd-rec.show { display: inline; }
+    .osd-ch { color: var(--cctv-dim); font-size: 11px; }
+    .osd-ts { color: var(--cctv-text); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .osd-zoom-lvl { color: var(--cctv-mute); font-size: 11px; }
+
+    .frame-load {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: rgba(14, 14, 12, 0.92);
+      font-size: 12px;
+      color: var(--cctv-dim);
+      transition: opacity 0.35s;
+    }
+    .frame-load.hide { opacity: 0; pointer-events: none; }
+    .load-ring {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--cctv-line2);
+      border-top-color: var(--cctv-green);
+      border-radius: 50%;
+      animation: cctv-spin 0.9s linear infinite;
+    }
+    @keyframes cctv-spin { to { transform: rotate(360deg); } }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 8px;
+      background: var(--cctv-surface);
+      border-top: 1px solid var(--cctv-line);
+      flex-shrink: 0;
+      gap: 8px;
+    }
+    .zoom-group, .tb-actions { display: flex; align-items: center; gap: 4px; }
+    .tb-label {
+      font-size: 11px;
+      color: var(--cctv-mute);
+      margin-right: 4px;
+    }
+    .tb-btn {
+      min-width: 34px;
+      padding: 4px 8px;
+      border: 1px solid var(--cctv-line2);
+      background: transparent;
+      color: var(--cctv-dim);
+      font-family: var(--cctv-font);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .tb-btn:hover { border-color: var(--cctv-text); color: var(--cctv-text); }
+    .tb-btn.on {
+      border-color: var(--cctv-green);
+      color: var(--cctv-green);
+      background: var(--cctv-green-dim);
+    }
+    .tb-fs { min-width: 52px; }
+
+    /* ── Panel ── */
+    .cctv-panel {
+      border-left: 1px solid var(--cctv-line);
+      background: var(--cctv-panel);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .panel-block {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--cctv-line);
+      flex-shrink: 0;
+    }
+    .panel-block.grow {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .panel-hd {
+      font-size: 11px;
+      color: var(--cctv-mute);
+      margin-bottom: 8px;
+    }
+    .panel-row { display: flex; align-items: center; gap: 8px; }
+
+    .btn-rec {
+      flex: 1;
+      padding: 7px 0;
+      border: 1px solid var(--cctv-line2);
+      background: transparent;
+      color: var(--cctv-text);
+      font-family: var(--cctv-font);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-rec:hover { border-color: var(--cctv-green); color: var(--cctv-green); }
+    .btn-rec.active {
+      border-color: var(--cctv-red);
+      color: var(--cctv-red);
+      background: var(--cctv-red-dim);
+    }
+    .btn-rec:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .rec-time {
+      font-size: 13px;
+      color: var(--cctv-dim);
+      min-width: 56px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .rec-time.warn { color: var(--cctv-red); }
+    .rec-hint { margin-top: 6px; font-size: 11px; color: var(--cctv-mute); }
+    .rec-hint.on { color: var(--cctv-red); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 0;
+    }
+    .stat {
+      padding: 10px;
+      text-align: center;
+      border-right: 1px solid var(--cctv-line);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-n {
+      display: block;
+      font-size: 20px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-l {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--cctv-mute);
+    }
+
+    .date-list { max-height: 88px; overflow-y: auto; margin-bottom: 6px; }
+    .d-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      color: var(--cctv-dim);
+    }
+    .d-item:hover { background: var(--cctv-surface); color: var(--cctv-text); }
+    .d-item.on { border-left-color: var(--cctv-green); background: var(--cctv-surface); color: var(--cctv-text); }
+    .d-cnt { color: var(--cctv-mute); font-size: 11px; }
+
+    .file-list { flex: 1; overflow-y: auto; min-height: 0; }
+    .f-grp { font-size: 11px; color: var(--cctv-mute); padding: 4px 8px; }
+    .f-item {
+      display: grid;
+      grid-template-columns: 58px 1fr auto;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--cctv-line);
+    }
+    .f-item:hover { background: var(--cctv-surface); }
+    .f-time { font-size: 12px; font-variant-numeric: tabular-nums; }
+    .f-sz { font-size: 11px; color: var(--cctv-mute); }
+    .f-act { display: flex; gap: 2px; opacity: 0; transition: opacity 0.1s; }
+    .f-item:hover .f-act { opacity: 1; }
+    .f-act button {
+      background: none;
+      border: none;
+      color: var(--cctv-mute);
+      font-family: var(--cctv-font);
+      font-size: 11px;
+      padding: 2px 4px;
+      cursor: pointer;
+    }
+    .f-act button:hover { color: var(--cctv-text); }
+
+    .empty {
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--cctv-mute);
+    }
+
+    .stor {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 8px;
+    }
+    .stor-lbl { font-size: 11px; color: var(--cctv-mute); }
+    .stor-track { height: 1px; background: var(--cctv-line); overflow: hidden; }
+    .stor-fill { height: 100%; width: 0; background: var(--cctv-green); transition: width 0.5s; }
+    .stor-val { font-size: 11px; color: var(--cctv-dim); font-variant-numeric: tabular-nums; }
+
+    /* ── SweetAlert2 ── */
+    .ny-swal {
+      border: 1px solid var(--cctv-line) !important;
+      border-radius: 0 !important;
+      background: var(--cctv-surface) !important;
+      font-family: var(--cctv-font) !important;
+    }
+    .ny-swal-title {
+      font-family: var(--cctv-font) !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      color: var(--cctv-text) !important;
+    }
+    .ny-swal-body { font-size: 13px !important; color: var(--cctv-dim) !important; }
+    .ny-swal-confirm, .ny-swal-cancel {
+      font-family: var(--cctv-font) !important;
+      font-size: 13px !important;
+      border-radius: 0 !important;
+    }
+    .ny-swal-confirm { background: var(--cctv-green) !important; color: #fff !important; }
+    .ny-swal-close { color: var(--cctv-mute) !important; }
+    .swal-video { width: 100%; max-height: 70vh; background: #000; display: block; }
+    .swal-prog { font-size: 12px; color: var(--cctv-dim); }
+    .swal2-loader { border-color: var(--cctv-green) transparent var(--cctv-green) transparent !important; }
+
+    @media (max-width: 800px) {
+      .cctv-app { margin: 0 -1rem; }
+      .cctv-layout { grid-template-columns: 1fr; }
+      .cctv-panel { border-left: none; border-top: 1px solid var(--cctv-line); max-height: 320px; }
+      .cctv-main { min-height: 240px; }
+      .hdr-title { font-size: 14px; }
+      .toolbar { flex-wrap: wrap; }
+    }
+  </style>
+
+  <script>
+    import '../scripts/cctv/app.ts';
+  </script>
+</BaseLayout>
