@@ -23,4 +23,4 @@
 
 ## 部署
 
-推送到 `main` 分支後，GitHub Actions 會自動構建並部署至 GitHub Pages。
+推送到 main 分支後，GitHub Actions 會自動構建並部署至 GitHub Pages。
