@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ViewTransitions } from 'astro:transitions';
 const { title } = Astro.props;
 const base = '/Diary';
 ---
@@ -16,20 +17,9 @@ const base = '/Diary';
     href="https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@300;400;700&family=Noto+Serif+TC:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
+  <ViewTransitions />
 </head>
 <body>
-  <!-- Page Transition Overlay -->
-  <div class="page-transition" id="pageTransition">
-    <div class="transition-content">
-      <div class="spinner-ring">
-        <div class="ring r1"></div>
-        <div class="ring r2"></div>
-        <div class="ring r3"></div>
-      </div>
-      <div class="transition-text">N-Diary</div>
-    </div>
-  </div>
-
   <header>
     <nav>
       <a href={`${base}/`} class="logo">📖 N-Diary</a>
@@ -51,125 +41,20 @@ const base = '/Diary';
   </footer>
 
   <style>
-    /* Page Transition Overlay */
-    .page-transition {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--color-bg);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 1;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-    }
-
-    .page-transition.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .transition-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    .spinner-ring {
-      position: relative;
-      width: 60px;
-      height: 60px;
-    }
-
-    .ring {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 2px solid transparent;
-    }
-
-    .ring.r1 {
-      border-top-color: var(--color-accent);
-      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    }
-
-    .ring.r2 {
-      width: 80%;
-      height: 80%;
-      top: 10%;
-      left: 10%;
-      border-right-color: var(--color-muted);
-      animation: spin 1.6s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
-    }
-
-    .ring.r3 {
-      width: 60%;
-      height: 60%;
-      top: 20%;
-      left: 20%;
-      border-bottom-color: var(--color-text);
-      animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .transition-text {
-      font-family: var(--font-heading);
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      letter-spacing: 0.1em;
-      opacity: 0;
-      animation: textFade 1s ease 0.3s forwards;
-    }
-
-    @keyframes textFade {
-      0% { opacity: 0; transform: translateY(8px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Main content fade in */
+    /* Astro ViewTransitions: page content fade-in */
     main {
-      animation: contentFadeIn 0.6s ease 0.4s both;
+      animation: fadeInUp 0.5s ease both;
     }
 
-    @keyframes contentFadeIn {
+    @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* 給每個頁面的不同元素加入 transition 動畫 */
+    :global([data-animate]) {
+      animation: fadeInUp 0.5s ease both;
+    }
   </style>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const overlay = document.getElementById('pageTransition');
-      if (overlay) {
-        setTimeout(() => {
-          overlay.classList.add('hidden');
-        }, 800);
-      }
-
-      // Intercept nav link clicks for transition
-      document.querySelectorAll('nav a[href]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          const href = (e.currentTarget as HTMLAnchorElement).getAttribute('href');
-          if (!href || href.startsWith('http')) return;
-          e.preventDefault();
-          overlay?.classList.remove('hidden');
-          setTimeout(() => {
-            window.location.href = href;
-          }, 400);
-        });
-      });
-    });
-  </script>
 </body>
 </html>
