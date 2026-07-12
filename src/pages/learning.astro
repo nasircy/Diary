@@ -400,7 +400,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
        TOEIC VOC Quiz
        ============================================================ */
     (function () {
-      const BASE = (import.meta as any).env?.BASE_URL || '/Diary/';
+      const BASE = import.meta.env.BASE_URL;
       const VOC_BASE = BASE + 'voc/';
       const STORAGE_KEY = 'toeic-voc-history';
       const MAX_DAY = 365;
