@@ -1,0 +1,72 @@
+{
+  "bankId": "web-frontend-basics",
+  "bankName": "前端開發核心技術檢定",
+  "description": "涵蓋 HTML5 語意標籤、CSS 現代版面配置 (Flexbox/Grid)、JavaScript 異步處理及 Web 效能優化之關鍵觀念題目。",
+  "questions": [
+    {
+      "id": 1,
+      "type": "single",
+      "question": "在現代 HTML 中，若需要標記頁面的主要導覽連結區域，使用哪一個語意化標籤最為合適？",
+      "options": [
+        "A. <header>",
+        "B. <section>",
+        "C. <nav>",
+        "D. <aside>"
+      ],
+      "answer": [2],
+      "explanation": "<nav> 標籤專門用於定義頁面的主要導覽連結區域。這有助於螢幕閱讀器與搜尋引擎 (SEO) 更佳地理解頁面結構。而 <header> 用於頁首，<section> 用於一般區段，<aside> 用於側邊欄或附帶資訊。"
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "關於 CSS 屬性 box-sizing 的描述，下列哪些選項是正確的？（複選）",
+      "options": [
+        "A. 預設值為 content-box，此時元素的實際寬度不包含 border 與 padding",
+        "B. 當設定為 border-box 時，設定的 width 會包含 content、padding 與 border",
+        "C. border-box 的計算方式為：實質寬度 = width - padding - border",
+        "D. 設定為 border-box 能更直觀地進行響應式柵格版面配置，避免 Padding 撐破版面"
+      ],
+      "answer": [0, 1, 3],
+      "explanation": "A 正確：content-box 是預設值，此時實際寬度 = width + padding + border。B 正確：border-box 會將 padding 和 border 壓縮在設定的 width 內部。C 錯誤：實際 content 的寬度才是 width - padding - border，而非『實質寬度』。D 正確： border-box 大幅簡化了排版佈局的尺寸計算，是現代前端開發的標準首選。"
+    },
+    {
+      "id": 3,
+      "type": "single",
+      "question": "若要防止 JavaScript 陣列 `const arr = [1, 2, 3]` 被新增、刪除或修改元素，使用下列哪一個方法最為徹底？",
+      "options": [
+        "A. Object.seal(arr)",
+        "B. Object.freeze(arr)",
+        "C. const 宣告本身已完全防護",
+        "D. Object.preventExtensions(arr)"
+      ],
+      "answer": [1],
+      "explanation": "Object.freeze() 是最嚴格的保護級別，它會凍結物件，使其無法新增屬性、無法刪除已有屬性、且無法修改已有屬性的值（對於陣列即為無法修改元素）。Object.seal() 允許修改現有值但不允許新增/刪除。const 宣告只防範重新賦值，但無法阻止陣列內部的修改。"
+    },
+    {
+      "id": 4,
+      "type": "multiple",
+      "question": "JavaScript 中的 Promise 有三種狀態，下列關於狀態轉移的敘述，哪些是正確的？（複選）",
+      "options": [
+        "A. 初始狀態為 pending (進行中)",
+        "B. 當調用 resolve() 時，狀態會從 pending 變更為 fulfilled (已成功)",
+        "C. 當調用 reject() 時，狀態會從 pending 變更為 rejected (已失敗)",
+        "D. 一旦狀態變更為 fulfilled 或 rejected 後，仍可透過調用 resolve/reject 來改變其最終結果"
+      ],
+      "answer": [0, 1, 2],
+      "explanation": "A, B, C 正確。D 錯誤：Promise 的狀態是『不可逆轉且最終確定 (settled)』的。一旦狀態轉移至 fulfilled 或 rejected，它將永遠保持該狀態，後續任何 resolve() 或 reject() 的呼叫都將被忽略。"
+    },
+    {
+      "id": 5,
+      "type": "single",
+      "question": "為了優化網頁載入效能，下列哪一項做法『無法』有效提升 First Contentful Paint (FCP) 指標？",
+      "options": [
+        "A. 將大型的 CSS 檔案移到頁面底部並以非同步加載",
+        "B. 壓縮並使用 Next-gen 格式（如 WebP, AVIF）儲存圖片",
+        "C. 啟用伺服器端 Gzip 或 Brotli 壓縮",
+        "D. 移除阻礙渲染的 JavaScript，或使用 async / defer 屬性"
+      ],
+      "answer": [0],
+      "explanation": "將核心/關鍵的 CSS 檔案移到頁面底部非同步加載會導致瀏覽器無法在第一時間獲取樣式，進而引起『無樣式內容閃爍 (FOUC)』或延遲 FCP 指標。關鍵 CSS 應當內聯 (inline) 或是優先加載，其餘非關鍵 CSS 才可以非同步加載。其餘選項 (圖片優化、壓縮、非阻塞 JS) 均能顯著加速瀏覽器首次渲染。"
+    }
+  ]
+}
