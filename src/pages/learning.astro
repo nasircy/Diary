@@ -84,21 +84,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </section>
 
   <style>
-    /* ── Collapsible Card (shared) ── */
     .lc-card {
       border: 1px solid var(--color-border);
-      border-radius: 10px;
+      border-radius: 14px;
       overflow: hidden;
       margin-bottom: 1.5rem;
-      transition: border-color 0.2s;
+      transition: border-color 0.25s, box-shadow 0.25s;
     }
-    .lc-card[open] { border-color: var(--color-accent); }
-
+    .lc-card[open] {
+      border-color: var(--color-accent);
+      box-shadow: 0 4px 24px rgba(74,103,65,0.08);
+    }
     .lc-card-summary {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 1.2rem;
+      padding: 1.1rem 1.4rem;
       cursor: pointer;
       list-style: none;
       transition: background 0.15s;
@@ -107,9 +108,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     .lc-card-summary::-webkit-details-marker { display: none; }
     .lc-card-summary::marker { content: ''; }
     .lc-card-summary:hover { background: var(--color-border); }
-
-    .lc-card-left { display: flex; align-items: center; gap: 0.85rem; }
-    .lc-card-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .lc-card-left { display: flex; align-items: center; gap: 0.9rem; }
+    .lc-card-icon { font-size: 1.6rem; flex-shrink: 0; }
     .lc-card-title {
       font-family: var(--font-heading);
       font-size: 1.1rem;
@@ -118,282 +118,255 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       margin: 0;
     }
     .lc-card-desc {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: var(--color-muted);
-      margin: 0.15rem 0 0;
+      margin: 0.1rem 0 0;
     }
     .lc-card-arrow {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: var(--color-muted);
-      transition: transform 0.2s;
+      transition: transform 0.25s;
       flex-shrink: 0;
     }
     .lc-card[open] .lc-card-arrow { transform: rotate(90deg); }
     .lc-card-body {
       border-top: 1px solid var(--color-border);
-      padding: 1rem;
+      padding: 1.2rem 1.4rem;
     }
 
-    /* ── VOC Day List ── */
     .voc-day-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 0.6rem;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
     }
     .voc-day-btn {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.65rem 0.9rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+      padding: 0.9rem 1rem;
       background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
+      border: 1.5px solid var(--color-border);
+      border-radius: 10px;
       cursor: pointer;
       font-family: var(--font-heading);
-      font-size: 0.85rem;
       color: var(--color-text);
-      transition: border-color 0.15s, background 0.15s;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      text-align: left;
     }
     .voc-day-btn:hover {
       border-color: var(--color-accent);
-      background: var(--color-border);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74,103,65,0.1);
     }
-    .voc-day-cnt {
-      font-size: 0.7rem;
-      color: var(--color-muted);
-    }
+    .voc-day-btn-label { font-size: 0.9rem; font-weight: 600; }
+    .voc-day-cnt { font-size: 0.72rem; color: var(--color-accent); font-weight: 500; }
     .voc-day-loading {
-      padding: 1rem;
+      padding: 2rem;
       text-align: center;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--color-muted);
+      font-family: var(--font-heading);
     }
 
-    /* ── VOC Quiz ── */
     .voc-quiz {
       border: 1px solid var(--color-border);
-      border-radius: 8px;
+      border-radius: 12px;
       overflow: hidden;
     }
     .voc-quiz-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.6rem 0.9rem;
+      padding: 0.75rem 1.1rem;
       background: var(--color-border);
       border-bottom: 1px solid var(--color-border);
     }
     .voc-quiz-title {
       font-family: var(--font-heading);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: var(--color-text);
     }
     .voc-quiz-progress {
       font-family: var(--font-heading);
-      font-size: 0.75rem;
-      color: var(--color-muted);
+      font-size: 0.78rem;
+      color: var(--color-accent);
+      font-weight: 600;
     }
-
     .voc-quiz-body {
-      padding: 1.2rem;
-      min-height: 160px;
+      padding: 1.5rem 1.2rem;
+      min-height: 180px;
     }
     .voc-question-type {
-      font-size: 0.7rem;
+      display: inline-block;
+      font-size: 0.68rem;
       font-family: var(--font-heading);
-      color: var(--color-accent);
-      margin-bottom: 0.6rem;
-      letter-spacing: 0.05em;
+      font-weight: 700;
+      color: var(--color-bg);
+      background: var(--color-accent);
+      border-radius: 4px;
+      padding: 0.15rem 0.5rem;
+      margin-bottom: 0.85rem;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
     }
     .voc-question-word {
       font-family: var(--font-heading);
-      font-size: 1.4rem;
-      font-weight: 600;
+      font-size: 1.8rem;
+      font-weight: 700;
       color: var(--color-text);
-      margin-bottom: 1rem;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
     }
     .voc-question-hint {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--color-muted);
-      margin-bottom: 0.8rem;
+      margin-bottom: 1rem;
     }
-
-    /* Type answer input */
-    .voc-input-row {
-      display: flex;
-      gap: 0.5rem;
-    }
+    .voc-input-row { display: flex; gap: 0.6rem; }
     .voc-input {
       flex: 1;
-      padding: 0.5rem 0.8rem;
-      border: 1px solid var(--color-border);
-      border-radius: 6px;
-      background: var(--color-bg);
-      color: var(--color-text);
-      font-family: var(--font-heading);
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .voc-input:focus { border-color: var(--color-accent); }
-    .voc-input.correct { border-color: #4caf50; background: rgba(76,175,80,0.08); }
-    .voc-input.wrong { border-color: #e53935; background: rgba(229,57,53,0.08); }
-
-    .voc-submit-btn {
-      padding: 0.5rem 1rem;
-      background: var(--color-accent);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-family: var(--font-heading);
-      font-size: 0.85rem;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .voc-submit-btn:hover { opacity: 0.85; }
-
-    /* Multiple choice */
-    .voc-choices {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-    }
-    .voc-choice {
-      padding: 0.65rem 0.9rem;
-      border: 1px solid var(--color-border);
+      padding: 0.65rem 1rem;
+      border: 1.5px solid var(--color-border);
       border-radius: 8px;
       background: var(--color-bg);
       color: var(--color-text);
-      font-family: var(--font-body);
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      text-align: left;
-    }
-    .voc-choice:hover:not(.chosen) { border-color: var(--color-accent); background: var(--color-border); }
-    .voc-choice.correct-choice { border-color: #4caf50; background: rgba(76,175,80,0.1); color: #4caf50; }
-    .voc-choice.wrong-choice { border-color: #e53935; background: rgba(229,57,53,0.1); color: #e53935; }
-    .voc-choice.chosen { pointer-events: none; }
-
-    /* Feedback */
-    .voc-feedback {
-      margin-top: 0.8rem;
-      padding: 0.6rem 0.8rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
       font-family: var(--font-heading);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .voc-feedback.correct-fb {
-      background: rgba(76,175,80,0.08);
-      color: #4caf50;
+    .voc-input:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(74,103,65,0.1);
     }
-    .voc-feedback.wrong-fb {
-      background: rgba(229,57,53,0.08);
-      color: #e53935;
+    .voc-input.correct { border-color: #4caf50; background: rgba(76,175,80,0.07); }
+    .voc-input.wrong { border-color: #e53935; background: rgba(229,57,53,0.07); }
+    .voc-submit-btn {
+      padding: 0.65rem 1.2rem;
+      background: var(--color-accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.15s, transform 0.1s;
     }
-
+    .voc-submit-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .voc-choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+    }
+    .voc-choice {
+      padding: 0.85rem 1rem;
+      border: 1.5px solid var(--color-border);
+      border-radius: 10px;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      text-align: left;
+      line-height: 1.5;
+    }
+    .voc-choice:hover:not(.chosen) {
+      border-color: var(--color-accent);
+      background: rgba(74,103,65,0.05);
+      transform: translateY(-1px);
+    }
+    .voc-choice.correct-choice { border-color: #4caf50; background: rgba(76,175,80,0.08); color: #388e3c; font-weight: 600; }
+    .voc-choice.wrong-choice { border-color: #e53935; background: rgba(229,57,53,0.08); color: #c62828; }
+    .voc-choice.chosen { pointer-events: none; }
+    .voc-feedback {
+      margin-top: 1rem;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-family: var(--font-heading);
+      font-weight: 500;
+    }
+    .voc-feedback.correct-fb { background: rgba(76,175,80,0.08); color: #388e3c; border-left: 3px solid #4caf50; }
+    .voc-feedback.wrong-fb { background: rgba(229,57,53,0.08); color: #c62828; border-left: 3px solid #e53935; }
     .voc-quiz-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.5rem 0.9rem;
+      padding: 0.65rem 1.1rem;
       border-top: 1px solid var(--color-border);
       background: var(--color-border);
     }
-    .voc-quiz-score {
-      font-family: var(--font-heading);
-      font-size: 0.8rem;
-      color: var(--color-muted);
-    }
+    .voc-quiz-score { font-family: var(--font-heading); font-size: 0.82rem; color: var(--color-muted); font-weight: 500; }
     .voc-quiz-next {
-      padding: 0.35rem 0.8rem;
+      padding: 0.4rem 1rem;
       background: var(--color-accent);
       color: #fff;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-family: var(--font-heading);
-      font-size: 0.8rem;
+      font-size: 0.82rem;
+      font-weight: 600;
       cursor: pointer;
+      transition: opacity 0.15s;
     }
-    .voc-quiz-next:hover { opacity: 0.85; }
+    .voc-quiz-next:hover { opacity: 0.88; }
 
-    /* ── VOC Result ── */
     .voc-result {
       text-align: center;
-      padding: 1.5rem 1rem;
+      padding: 2rem 1.2rem;
       border: 1px solid var(--color-border);
-      border-radius: 8px;
+      border-radius: 12px;
     }
-    .voc-result-title {
-      font-family: var(--font-heading);
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: 0.5rem;
-    }
-    .voc-result-score {
-      font-size: 2rem;
-      font-weight: 700;
-      font-family: var(--font-heading);
-      color: var(--color-accent);
-      margin-bottom: 0.3rem;
-    }
-    .voc-result-pct {
-      font-size: 0.9rem;
-      color: var(--color-muted);
-      margin-bottom: 1rem;
-    }
-    .voc-result-detail {
-      text-align: left;
-      margin-bottom: 1rem;
-    }
-    .voc-result-word {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.4rem 0;
-      border-bottom: 1px solid var(--color-border);
-      font-size: 0.85rem;
-    }
+    .voc-result-title { font-family: var(--font-heading); font-size: 1rem; color: var(--color-muted); margin-bottom: 0.5rem; }
+    .voc-result-score { font-size: 3rem; font-weight: 700; font-family: var(--font-heading); color: var(--color-accent); line-height: 1; margin-bottom: 0.25rem; }
+    .voc-result-pct { font-size: 0.95rem; color: var(--color-muted); font-family: var(--font-heading); margin-bottom: 1.5rem; }
+    .voc-result-detail { text-align: left; margin-bottom: 1.5rem; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
+    .voc-result-word { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.85rem; border-bottom: 1px solid var(--color-border); font-size: 0.88rem; gap: 1rem; }
     .voc-result-word:last-child { border-bottom: none; }
-    .voc-result-word .wrong-word { color: #e53935; }
-    .voc-result-word .correct-word { color: #4caf50; }
-
+    .voc-result-word .wrong-word { color: #c62828; font-weight: 600; }
+    .voc-result-word .correct-word { color: #388e3c; }
     .voc-back-btn {
-      padding: 0.5rem 1.2rem;
+      padding: 0.6rem 1.5rem;
       background: var(--color-accent);
       color: #fff;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-family: var(--font-heading);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
-      margin-top: 0.5rem;
+      transition: opacity 0.15s, transform 0.1s;
     }
-    .voc-back-btn:hover { opacity: 0.85; }
+    .voc-back-btn:hover { opacity: 0.88; transform: translateY(-1px); }
 
-    /* ── Python Runner (same as before) ── */
-    .py-runner { border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
-    .py-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.85rem; background: var(--color-border); border-bottom: 1px solid var(--color-border); }
-    .py-label { font-family: var(--font-heading); font-size: 0.8rem; color: var(--color-muted); letter-spacing: 0.03em; }
-    .py-run-btn { display: flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.8rem; background: var(--color-accent); color: #fff; border: none; border-radius: 6px; font-family: var(--font-heading); font-size: 0.8rem; cursor: pointer; transition: opacity 0.15s; }
-    .py-run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .py-run-btn:not(:disabled):hover { opacity: 0.85; }
+    .py-runner { border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; }
+    .py-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 0.9rem; background: var(--color-border); border-bottom: 1px solid var(--color-border); }
+    .py-label { font-family: var(--font-heading); font-size: 0.78rem; color: var(--color-muted); letter-spacing: 0.04em; font-weight: 600; }
+    .py-run-btn { display: flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.9rem; background: var(--color-accent); color: #fff; border: none; border-radius: 6px; font-family: var(--font-heading); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+    .py-run-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .py-run-btn:not(:disabled):hover { opacity: 0.88; }
     .py-run-icon { font-size: 0.65rem; }
     .py-editor { width: 100%; min-height: 220px; padding: 1rem; background: var(--color-bg); color: var(--color-text); border: none; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.7; resize: vertical; outline: none; tab-size: 4; }
     .py-editor::placeholder { color: var(--color-muted); opacity: 0.6; }
-    .py-output-header { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.85rem; background: var(--color-border); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+    .py-output-header { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.9rem; background: var(--color-border); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
     .py-status { font-size: 0.7rem; font-family: var(--font-heading); color: var(--color-muted); }
     .py-output { padding: 1rem; min-height: 80px; max-height: 300px; overflow-y: auto; background: var(--color-bg); color: var(--color-text); font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.7; white-space: pre-wrap; word-break: break-all; margin: 0; }
-    .py-output.has-error { color: #a84848; }
+    .py-output.has-error { color: #c62828; }
     .py-output.running { color: var(--color-muted); }
 
     @media (max-width: 640px) {
       .voc-choices { grid-template-columns: 1fr; }
-      .voc-day-list { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+      .voc-day-list { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      .voc-question-word { font-size: 1.4rem; }
     }
   </style>
+
+
 
   <script>
     /* ============================================================
@@ -453,7 +426,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         dayListEl.innerHTML = allDays.map(d => {
           const h = hist[d];
           const badge = h ? `<span class="voc-day-cnt">✓${h.correct} ✗${h.wrong}</span>` : '';
-          return `<button class="voc-day-btn" data-day="${d}"><span>TOEIC VOC DAY ${d}</span>${badge}</button>`;
+          return `<button class="voc-day-btn" data-day="${d}"><span class="voc-day-btn-label">TOEIC VOC DAY ${d}</span>${badge}</button>`;
         }).join('');
 
         dayListEl.querySelectorAll('.voc-day-btn').forEach(btn => {
