@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="NTUB 2026 通識資安稽核一條龍">
+  <section>
+    <h1>NTUB 2026 通識資安稽核一條龍</h1>
+    <p style="color: var(--color-muted); margin-bottom: 2rem;">為了符合國家資安稽核的指標，並加速檢測流程的進度，特別做這個一鍵式全自動資安檢測工具！</p>
+
+    <article>
+      <h2>📥 程式下載</h2>
+      <p>請點選下方連結，直接下載檔案（下載後記得務必先解壓縮後再依照說明書執行）：</p>
+      <p><a href="https://github.com/nasircy/ntub2026ITAudit/raw/main/NTUB_Audit.zip" style="display:inline-block; background:#0078D4; color:white; padding:0.5rem 1.2rem; border-radius:6px; text-decoration:none; font-weight:600;">📥 下載 NTUB_Audit.zip</a></p>
+      <p style="color: var(--color-muted); font-size: 0.9rem;">下載說明：點擊上方連結後，瀏覽器將會直接下載 .zip 壓縮檔。下載後請將其「解壓縮」，再以「最高管理員」執行 NTUB_Audit.bat。</p>
+    </article>
+
+    <article>
+      <h2>功能說明</h2>
+      <ul>
+        <li><strong>版本檢查</strong>：自動讀取系統版本，針對舊版 Windows 10（低於 22H2）提示重大資安風險，並建議後續升級。</li>
+        <li><strong>更新服務重置</strong>：強制清除 Windows Update 損壞快取，重新啟動更新服務，並在背景調用。</li>
+        <li><strong>取消密碼永久有效</strong>：自動檢查本機所有帳號，強制取消「密碼永久有效」設定，落實定期變更密碼之稽核要點。</li>
+        <li><strong>Admin 與 Guest 帳號</strong>：精準鎖定本機內建最高權限 Administrator 與 Guest 帳號，若偵測為啟用狀態則強制停用，防止被惡意掃描或利用。</li>
+        <li><strong>四大重點軟體檢查</strong>：偵測系統中是否安裝 Google Chrome、Microsoft Edge、Adobe Acrobat Reader 及 Java。</li>
+        <li><strong>背景更新</strong>：自動使用 Windows 內建 winget 軟體包管理器，在背景強制執行靜默升級至最新安全版本。</li>
+      </ul>
+    </article>
+
+    <article>
+      <h2>使用步驟說明</h2>
+
+      <h3>步驟一：下載並解壓縮程式檔</h3>
+      <ul>
+        <li>點擊上方的 <strong>下載連結</strong>，將 NTUB_Audit.zip 儲存至您的電腦中（例如桌面或下載資料夾），並將其解壓縮取出 NTUB_Audit.bat 檔案。</li>
+        <li>⚠️ <strong>重要警告（不建議使用複製的方式）</strong>：若您是自行複製網頁代碼手動建立檔案，存檔時請務必確認檔案編碼選擇 <strong>UTF-8 (帶簽名/BOM)</strong>，否則執行時的命令提示字元視窗將會出現中文字亂碼。</li>
+      </ul>
+
+      <h3>步驟二：以系統管理員身分執行</h3>
+      <ul>
+        <li>找到剛才下載的 NTUB_Audit.bat 檔案。</li>
+        <li>在檔案上點擊 <strong>滑鼠右鍵</strong> ➔ 選擇 <strong>「以系統管理員身分執行」</strong> (Run as administrator)。</li>
+      </ul>
+
+      <h3>步驟三：按下【是】後，不要動讓他跑！</h3>
+      <ul>
+        <li>程式啟動後，將全自動執行初檢！</li>
+        <li>過程中若偵測到未更新的軟體，會透過 winget 於背景下載並靜默安裝，請耐心等待其完成。</li>
+      </ul>
+
+      <h3>步驟四：執行完畢與確認</h3>
+      <ul>
+        <li>腳本全自動跑完後，畫面最後會停留在：<code>所有資安強制防護與盤點任務已執行完畢！</code></li>
+        <li>此時請檢視視窗中是否有任何紅色/黃色警告，並按鍵盤上的 <strong>任意鍵</strong> 即可安全結束視窗。</li>
+      </ul>
+    </article>
+
+    <article>
+      <h2>為什麼要做這個工具？</h2>
+      <p>在通識中心處理的過程中，發現流程卡最久的部分是在於修改密碼永久選項及更新系統和軟體部分。為了加快整體處理與檢查的進度，特別製作這個一鍵式整合工具，目的就是希望能夠通過稽核，以及校園檢查過程中流程能夠更順利。</p>
+      <p style="color: var(--color-muted); font-style: italic;">建議：由於很多軟體都一直在不定時更新，系統也是，建議在正式稽核的前幾天，將此程式重新開啟執行一次，確保所有的安全性或是應用程式都是在最新狀態。</p>
+    </article>
+
+    <article>
+      <p><a href="https://github.com/nasircy/ntub2026ITAudit" target="_blank" rel="noopener">👉 前往 GitHub 查看原始 Repo</a></p>
+    </article>
+  </section>
+</BaseLayout>
