@@ -1,0 +1,559 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .page-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+
+  .mode-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.1s both;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+
+  .mode-btn:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  .mode-btn.active {
+    border-color: var(--color-accent);
+    background: rgba(74, 103, 65, 0.04);
+  }
+
+  .mode-btn h3 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    margin: 0 0 0.3rem 0;
+  }
+
+  .mode-btn p {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  .transfer-area {
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .transfer-area.visible {
+    display: block;
+  }
+
+  .code-display {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .code-display p {
+    color: var(--color-muted);
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .code-display .code {
+    font-family: monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.2em;
+    user-select: all;
+  }
+
+  .code-display .copy-btn {
+    margin-top: 1rem;
+    padding: 0.5rem 1.5rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: var(--color-muted);
+    transition: all 0.2s;
+  }
+
+  .code-display .copy-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .code-input {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .code-input p {
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .code-input input {
+    width: 200px;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 0.15em;
+    outline: none;
+  }
+
+  .code-input input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .code-input button {
+    display: block;
+    margin: 1rem auto 0;
+    padding: 0.75rem 2rem;
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .code-input button:hover {
+    opacity: 0.85;
+  }
+
+  .drop-zone {
+    border: 2px dashed var(--color-border);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: white;
+    transition: all 0.2s;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+  }
+
+  .drop-zone:hover,
+  .drop-zone.dragover {
+    border-color: var(--color-accent);
+    background: rgba(74, 103, 65, 0.02);
+  }
+
+  .drop-zone p {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .drop-zone .hint {
+    font-size: 0.8rem;
+    color: #aaa;
+  }
+
+  .drop-zone input[type="file"] {
+    display: none;
+  }
+
+  .progress-container {
+    display: none;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-container.visible {
+    display: block;
+  }
+
+  .progress-bar-bg {
+    height: 8px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--color-accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .progress-text {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    text-align: center;
+  }
+
+  .status-bar {
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+
+  .status-dot.connected {
+    background: var(--color-accent);
+  }
+
+  .file-list {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .file-item:last-child {
+    border-bottom: none;
+  }
+
+  .file-item .name {
+    font-size: 0.9rem;
+  }
+
+  .file-item .size {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+  }
+
+  .received-files {
+    margin-top: 1rem;
+  }
+
+  .received-file {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    margin: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .received-file:hover {
+    border-color: var(--color-accent);
+  }
+</style>
+
+<BaseLayout title="NY DROP">
+  <a href="/Diary/nytools" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+    返回 NYTools
+  </a>
+
+  <div class="page-header">
+    <h1>NY DROP</h1>
+    <p>P2P 檔案傳輸 — 6 位數代碼配對，點對點直接傳送</p>
+  </div>
+
+  <div id="modeSelect" class="mode-selector">
+    <button class="mode-btn" data-mode="sender">
+      <h3>建立房間</h3>
+      <p>產生代碼，等待對方加入</p>
+    </button>
+    <button class="mode-btn" data-mode="receiver">
+      <h3>加入房間</h3>
+      <p>輸入代碼，連線傳送</p>
+    </button>
+  </div>
+
+  <div id="transferArea" class="transfer-area">
+    <div class="status-bar">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">未連線</span>
+    </div>
+
+    <div id="codeDisplay" class="code-display" style="display:none;">
+      <p>將此代碼分享給對方</p>
+      <div class="code" id="roomCode"></div>
+      <button class="copy-btn" id="copyCode">複製代碼</button>
+    </div>
+
+    <div id="codeInput" class="code-input" style="display:none;">
+      <p>輸入對方提供的 6 位數代碼</p>
+      <input type="text" id="codeField" maxlength="6" placeholder="000000" />
+      <button id="connectBtn">連線</button>
+    </div>
+
+    <div id="dropZone" class="drop-zone" style="display:none;">
+      <p>拖曳檔案到這裡，或點擊選擇檔案</p>
+      <p class="hint">支援任何檔案格式</p>
+      <input type="file" id="fileInput" multiple />
+    </div>
+
+    <div id="progressContainer" class="progress-container">
+      <div class="progress-bar-bg">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="progress-text" id="progressText">0%</div>
+    </div>
+
+    <div id="fileList" class="file-list" style="display:none;"></div>
+
+    <div id="receivedFiles" class="received-files"></div>
+  </div>
+</BaseLayout>
+
+<script is:inline src="https://unpkg.com/peerjs/dist/peerjs.min.js"></script>
+<script is:inline>
+(function() {
+  var peer = null;
+  var conn = null;
+  var role = null;
+  var roomCode = '';
+
+  var modeSelect = document.getElementById('modeSelect');
+  var transferArea = document.getElementById('transferArea');
+  var statusDot = document.getElementById('statusDot');
+  var statusText = document.getElementById('statusText');
+  var codeDisplay = document.getElementById('codeDisplay');
+  var codeInput = document.getElementById('codeInput');
+  var dropZone = document.getElementById('dropZone');
+  var fileInput = document.getElementById('fileInput');
+  var progressContainer = document.getElementById('progressContainer');
+  var progressBar = document.getElementById('progressBar');
+  var progressText = document.getElementById('progressText');
+  var fileList = document.getElementById('fileList');
+  var receivedFiles = document.getElementById('receivedFiles');
+
+  function genCode() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
+
+  function setStatus(connected, text) {
+    statusDot.className = 'status-dot' + (connected ? ' connected' : '');
+    statusText.textContent = text;
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  document.querySelectorAll('.mode-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      role = this.dataset.mode;
+      modeSelect.style.display = 'none';
+      transferArea.classList.add('visible');
+
+      if (role === 'sender') {
+        roomCode = genCode();
+        document.getElementById('roomCode').textContent = roomCode;
+        codeDisplay.style.display = 'block';
+        startSender();
+      } else {
+        codeInput.style.display = 'block';
+      }
+    });
+  });
+
+  document.getElementById('copyCode').addEventListener('click', function() {
+    navigator.clipboard.writeText(roomCode);
+    this.textContent = '已複製！';
+    setTimeout(function() {
+      document.getElementById('copyCode').textContent = '複製代碼';
+    }, 1500);
+  });
+
+  document.getElementById('connectBtn').addEventListener('click', function() {
+    var code = document.getElementById('codeField').value.trim();
+    if (code.length !== 6) return;
+    roomCode = code;
+    startReceiver();
+  });
+
+  function startSender() {
+    peer = new Peer('nydrop_' + roomCode);
+
+    peer.on('connection', function(c) {
+      conn = c;
+      conn.on('open', function() {
+        setStatus(true, '對方已連線');
+        codeDisplay.style.display = 'none';
+        dropZone.style.display = 'block';
+      });
+      conn.on('close', function() {
+        setStatus(false, '對方已斷線');
+      });
+    });
+  }
+
+  function startReceiver() {
+    peer = new Peer('nydrop_' + Math.random().toString(36).substr(2, 8));
+
+    peer.on('open', function() {
+      conn = peer.connect('nydrop_' + roomCode, { reliable: true });
+      conn.on('open', function() {
+        setStatus(true, '已連線');
+        codeInput.style.display = 'none';
+        dropZone.style.display = 'block';
+      });
+      conn.on('data', function(data) {
+        if (data.type === 'file') {
+          receiveFile(data);
+        }
+      });
+      conn.on('close', function() {
+        setStatus(false, '連線中斷');
+      });
+    });
+  }
+
+  dropZone.addEventListener('click', function() {
+    fileInput.click();
+  });
+
+  dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('dragover');
+  });
+
+  dropZone.addEventListener('dragleave', function() {
+    this.classList.remove('dragover');
+  });
+
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+    sendFiles(e.dataTransfer.files);
+  });
+
+  fileInput.addEventListener('change', function() {
+    sendFiles(this.files);
+  });
+
+  function sendFiles(files) {
+    if (!conn || !conn.open) return;
+
+    fileList.style.display = 'block';
+    fileList.innerHTML = '';
+
+    var total = files.length;
+    var sent = 0;
+
+    Array.from(files).forEach(function(file) {
+      var item = document.createElement('div');
+      item.className = 'file-item';
+      item.innerHTML = '<span class="name">' + file.name + '</span><span class="size">' + formatSize(file.size) + '</span>';
+      fileList.appendChild(item);
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        conn.send({
+          type: 'file',
+          name: file.name,
+          size: file.size,
+          data: e.target.result
+        });
+        sent++;
+        var pct = Math.round((sent / total) * 100);
+        progressContainer.classList.add('visible');
+        progressBar.style.width = pct + '%';
+        progressText.textContent = pct + '% — ' + sent + '/' + total + ' 個檔案';
+
+        if (sent === total) {
+          progressText.textContent = '全部傳送完成！';
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function receiveFile(data) {
+    var blob = new Blob([data.data]);
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = data.name;
+    a.className = 'received-file';
+    a.textContent = data.name + ' (' + formatSize(data.size) + ')';
+    a.click();
+    receivedFiles.appendChild(a);
+  }
+})();
+</script>
