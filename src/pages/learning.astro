@@ -22,8 +22,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </summary>
 
         <div class="lc-card-body">
-          <!-- Day selector -->
-          <div id="voc-day-list" class="voc-day-list"></div>
+          <div id="voc-setup" class="voc-setup">
+            <div class="voc-setup-group">
+              <label for="voc-day-select" class="voc-setup-label">選擇天數：</label>
+              <select id="voc-day-select" class="voc-select"></select>
+            </div>
+            <div class="voc-setup-group">
+              <label for="voc-mode-select" class="voc-setup-label">測驗模式：</label>
+              <select id="voc-mode-select" class="voc-select">
+                <option value="mixed">隨機混合</option>
+                <option value="type-en">輸入英文</option>
+                <option value="pick-zh">選擇中文</option>
+                <option value="pick-en">選擇英文</option>
+              </select>
+            </div>
+            <button id="voc-start-btn" class="voc-start-btn">開始測驗</button>
+          </div>
 
           <!-- Quiz area -->
           <div id="voc-quiz" class="voc-quiz" style="display:none">
@@ -83,7 +97,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </article>
   </section>
 
-  <style>
+  <style is:global>
     .lc-card {
       border: 1px solid var(--color-border);
       border-radius: 14px;
@@ -134,33 +148,67 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       padding: 1.2rem 1.4rem;
     }
 
-    .voc-day-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 0.75rem;
-    }
-    .voc-day-btn {
+    .voc-setup {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 0.25rem;
-      padding: 0.9rem 1rem;
+      gap: 1.2rem;
+      max-width: 400px;
+      margin: 1rem auto;
+      padding: 1.5rem;
       background: var(--color-bg);
-      border: 1.5px solid var(--color-border);
-      border-radius: 10px;
-      cursor: pointer;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    }
+    .voc-setup-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .voc-setup-label {
       font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
       color: var(--color-text);
-      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-      text-align: left;
     }
-    .voc-day-btn:hover {
+    .voc-select {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border: 1.5px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .voc-select:focus {
       border-color: var(--color-accent);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(74,103,65,0.1);
     }
-    .voc-day-btn-label { font-size: 0.9rem; font-weight: 600; }
-    .voc-day-cnt { font-size: 0.72rem; color: var(--color-accent); font-weight: 500; }
+    .voc-start-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--color-accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    .voc-start-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .voc-start-btn:active {
+      transform: translateY(0);
+    }
     .voc-day-loading {
       padding: 2rem;
       text-align: center;
@@ -377,7 +425,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       const STORAGE_KEY = 'toeic-voc-history';
       const MAX_DAY = 365;
 
-      const dayListEl = document.getElementById('voc-day-list')!;
+      const setupEl = document.getElementById('voc-setup')!;
+      const daySelectEl = document.getElementById('voc-day-select') as HTMLSelectElement;
+      const modeSelectEl = document.getElementById('voc-mode-select') as HTMLSelectElement;
+      const startBtn = document.getElementById('voc-start-btn') as HTMLButtonElement;
       const quizEl = document.getElementById('voc-quiz')!;
       const quizTitle = document.getElementById('voc-quiz-title')!;
       const quizProgress = document.getElementById('voc-quiz-progress')!;
@@ -406,7 +457,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       }
 
       async function discoverDays() {
-        dayListEl.innerHTML = '<div class="voc-day-loading">載入中…</div>';
+        daySelectEl.innerHTML = '<option value="">載入中…</option>';
         try {
           const r = await fetch(VOC_BASE + 'manifest.json');
           const data = await r.json();
@@ -419,19 +470,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
       function renderDayList() {
         if (!allDays.length) {
-          dayListEl.innerHTML = '<div class="voc-day-loading">還沒有單字檔案。</div>';
+          daySelectEl.innerHTML = '<option value="">無可用單字檔</option>';
+          startBtn.disabled = true;
           return;
         }
         const hist = loadHistory();
-        dayListEl.innerHTML = allDays.map(d => {
+        daySelectEl.innerHTML = allDays.map(d => {
           const h = hist[d];
-          const badge = h ? `<span class="voc-day-cnt">✓${h.correct} ✗${h.wrong}</span>` : '';
-          return `<button class="voc-day-btn" data-day="${d}"><span class="voc-day-btn-label">TOEIC VOC DAY ${d}</span>${badge}</button>`;
+          const badge = h ? ` (✓${h.correct} ✗${h.wrong})` : '';
+          return `<option value="${d}">TOEIC VOC DAY ${d}${badge}</option>`;
         }).join('');
-
-        dayListEl.querySelectorAll('.voc-day-btn').forEach(btn => {
-          btn.addEventListener('click', () => startQuiz(parseInt((btn as HTMLElement).dataset.day!)));
-        });
+        startBtn.disabled = false;
       }
 
       async function startQuiz(day: number) {
@@ -441,12 +490,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           const data = await r.json();
           currentWords = data.words;
         } catch {
-          dayListEl.innerHTML = '<div class="voc-day-loading">載入失敗。</div>';
+          alert('載入失敗。');
           return;
         }
         qIndex = 0; correct = 0; wrong = 0; wrongWords = [];
         shuffle(currentWords);
-        dayListEl.style.display = 'none';
+        setupEl.style.display = 'none';
         resultEl.style.display = 'none';
         quizEl.style.display = 'block';
         quizNext.style.display = 'none';
@@ -462,7 +511,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         quizNext.style.display = 'none';
 
         const word = currentWords[qIndex];
-        const mode = Math.floor(Math.random() * 3); // 0: type en, 1: pick zh from en, 2: pick en from zh
+        const selectedMode = modeSelectEl.value;
+        let mode = 0;
+        if (selectedMode === 'mixed') {
+          mode = Math.floor(Math.random() * 3);
+        } else if (selectedMode === 'type-en') {
+          mode = 0;
+        } else if (selectedMode === 'pick-zh') {
+          mode = 1;
+        } else if (selectedMode === 'pick-en') {
+          mode = 2;
+        }
 
         if (mode === 0) {
           renderTypeEn(word);
@@ -602,13 +661,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       function backToDays() {
         quizEl.style.display = 'none';
         resultEl.style.display = 'none';
-        dayListEl.style.display = '';
+        setupEl.style.display = '';
         renderDayList();
       }
 
+      startBtn.addEventListener('click', () => {
+        const day = parseInt(daySelectEl.value);
+        if (day) startQuiz(day);
+      });
+
       quizNext.addEventListener('click', () => { qIndex++; renderQuestion(); });
 
-      // Auto-discover on card open
       vocCard.addEventListener('toggle', () => {
         if (vocCard.open && !allDays.length) discoverDays();
       });
