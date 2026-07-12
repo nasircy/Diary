@@ -1,0 +1,451 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .page-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+
+  .mode-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.1s both;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+
+  .mode-btn:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  .mode-btn.active {
+    border-color: var(--color-accent);
+    background: rgba(74, 103, 65, 0.04);
+  }
+
+  .mode-btn h3 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    margin: 0 0 0.3rem 0;
+  }
+
+  .mode-btn p {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  .chat-area {
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .chat-area.visible {
+    display: block;
+  }
+
+  .status-bar {
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+
+  .status-dot.connected {
+    background: var(--color-accent);
+  }
+
+  .messages {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1rem;
+    min-height: 320px;
+    max-height: 420px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+  }
+
+  .msg {
+    margin-bottom: 0.75rem;
+    max-width: 80%;
+  }
+
+  .msg.sent {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .msg .bubble {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .msg.received .bubble {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+  }
+
+  .msg.sent .bubble {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .msg .time {
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    margin-top: 0.25rem;
+  }
+
+  .input-area {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .input-area input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .input-area input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .input-area button {
+    padding: 0.75rem 1.5rem;
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .input-area button:hover {
+    opacity: 0.85;
+  }
+
+  .input-area button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .admin-setup {
+    animation: fadeIn 0.4s ease-out;
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+  }
+
+  .admin-setup p {
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+  }
+
+  .admin-setup button {
+    padding: 0.75rem 2rem;
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .admin-setup button:hover {
+    opacity: 0.85;
+  }
+
+  .waiting {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+
+  .waiting .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+<BaseLayout title="NY CHAT">
+  <a href="/Diary/nytools" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+    返回 NYTools
+  </a>
+
+  <div class="page-header">
+    <h1>NY CHAT</h1>
+    <p>P2P 分散式客服排隊系統 — 即時加密對話，無需伺服器</p>
+  </div>
+
+  <div id="modeSelect" class="mode-selector">
+    <button class="mode-btn" data-mode="user">
+      <h3>客人</h3>
+      <p>自動排隊，連線客服</p>
+    </button>
+    <button class="mode-btn" data-mode="admin">
+      <h3>客服</h3>
+      <p>開設櫃台，服務客人</p>
+    </button>
+  </div>
+
+  <div id="adminSetup" class="admin-setup" style="display:none;">
+    <p>點擊下方按鈕開設櫃台，等待客人連線</p>
+    <button id="startAdmin">開設櫃台</button>
+  </div>
+
+  <div id="userWaiting" class="waiting" style="display:none;">
+    <div class="spinner"></div>
+    <p>正在尋找空閒櫃台...</p>
+  </div>
+
+  <div id="chatArea" class="chat-area">
+    <div class="status-bar">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">未連線</span>
+    </div>
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <input type="text" id="msgInput" placeholder="輸入訊息..." disabled />
+      <button id="sendBtn" disabled>送出</button>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline src="https://unpkg.com/peerjs/dist/peerjs.min.js"></script>
+<script is:inline>
+(function() {
+  var peer = null;
+  var conn = null;
+  var role = null;
+
+  var modeSelect = document.getElementById('modeSelect');
+  var adminSetup = document.getElementById('adminSetup');
+  var userWaiting = document.getElementById('userWaiting');
+  var chatArea = document.getElementById('chatArea');
+  var statusDot = document.getElementById('statusDot');
+  var statusText = document.getElementById('statusText');
+  var messages = document.getElementById('messages');
+  var msgInput = document.getElementById('msgInput');
+  var sendBtn = document.getElementById('sendBtn');
+
+  function genId() {
+    return 'nychat_' + Math.random().toString(36).substr(2, 8);
+  }
+
+  function genAdminId() {
+    return 'nychat_admin_' + Math.floor(Math.random() * 1000);
+  }
+
+  function now() {
+    return new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function addMsg(text, sent) {
+    var div = document.createElement('div');
+    div.className = 'msg ' + (sent ? 'sent' : 'received');
+    div.innerHTML = '<div class="bubble">' + text + '</div><div class="time">' + now() + '</div>';
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function setStatus(connected, text) {
+    statusDot.className = 'status-dot' + (connected ? ' connected' : '');
+    statusText.textContent = text;
+  }
+
+  function showChat() {
+    modeSelect.style.display = 'none';
+    adminSetup.style.display = 'none';
+    userWaiting.style.display = 'none';
+    chatArea.classList.add('visible');
+    msgInput.disabled = false;
+    sendBtn.disabled = false;
+  }
+
+  function sendMessage() {
+    var text = msgInput.value.trim();
+    if (!text || !conn) return;
+    conn.send(text);
+    addMsg(text, true);
+    msgInput.value = '';
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  msgInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+  document.querySelectorAll('.mode-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      role = this.dataset.mode;
+      if (role === 'admin') {
+        modeSelect.style.display = 'none';
+        adminSetup.style.display = 'block';
+      } else {
+        modeSelect.style.display = 'none';
+        userWaiting.style.display = 'block';
+        startUser();
+      }
+    });
+  });
+
+  document.getElementById('startAdmin').addEventListener('click', function() {
+    startAdmin();
+  });
+
+  function startAdmin() {
+    var id = genAdminId();
+    peer = new Peer(id);
+
+    peer.on('open', function() {
+      adminSetup.innerHTML = '<p>櫃台已開設（ID: ' + id + '）</p><p>等待客人連線中...</p><div class="spinner" style="width:32px;height:32px;border:3px solid var(--color-border);border-top-color:var(--color-accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:1rem auto;"></div>';
+    });
+
+    peer.on('connection', function(c) {
+      conn = c;
+      conn.on('open', function() {
+        setStatus(true, '客人已連線');
+        showChat();
+        addMsg('客人已連線，可以開始服務', false);
+      });
+      conn.on('data', function(data) {
+        addMsg(data, false);
+      });
+      conn.on('close', function() {
+        setStatus(false, '客人已斷線');
+        addMsg('對方已離開', false);
+      });
+    });
+  }
+
+  function startUser() {
+    peer = new Peer(genId());
+
+    peer.on('open', function() {
+      tryScanAdmins();
+    });
+  }
+
+  function tryScanAdmins() {
+    var tryCount = 0;
+    var maxTries = 5;
+
+    function tryNext() {
+      if (tryCount >= maxTries) {
+        userWaiting.innerHTML = '<p>暫無空閒櫃台，請稍後再試</p>';
+        return;
+      }
+      var adminId = 'nychat_admin_' + Math.floor(Math.random() * 1000);
+      tryCount++;
+
+      try {
+        conn = peer.connect(adminId, { timeout: 3000 });
+        conn.on('open', function() {
+          setStatus(true, '已連線至櫃台');
+          showChat();
+          addMsg('已連線至客服櫃台', false);
+        });
+        conn.on('data', function(data) {
+          addMsg(data, false);
+        });
+        conn.on('close', function() {
+          setStatus(false, '櫃台已斷線');
+        });
+        conn.on('error', function() {
+          tryNext();
+        });
+      } catch(e) {
+        tryNext();
+      }
+    }
+
+    tryNext();
+  }
+})();
+</script>
