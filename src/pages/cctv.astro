@@ -22,16 +22,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="splash-bar"><span></span></div>
     </div>
 
-    <div class="cctv-hdr">
-      <div class="hdr-brand">
+    <div class="cctv-status-bar">
+      <div class="status-left">
         <span class="hdr-rec-dot" id="cctv-hdr-rec-dot"></span>
-        <h1 class="hdr-title">羊家門前有相機 📷</h1>
-      </div>
-      <div class="hdr-status">
         <span class="sig" id="cctv-sig-dot"></span>
         <span class="sig-txt" id="cctv-sig-txt">連線中</span>
       </div>
-      <div class="hdr-clock" id="cctv-clock">00:00:00</div>
+      <div class="status-right">
+        <span class="cctv-clock" id="cctv-clock">00:00:00</span>
+      </div>
     </div>
 
     <div class="cctv-cors-warn" id="cctv-cors-warn">
@@ -122,41 +121,32 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </div>
 
   <style is:global>
-    /* ── CCTV App Scoped Styles ── */
+    /* ── Override main max-width for full-width CCTV layout ── */
     .cctv-app {
-      --cctv-bg: #0e0e0c;
-      --cctv-surface: #141412;
-      --cctv-panel: #111110;
-      --cctv-line: #2a2a26;
-      --cctv-line2: #3a3a34;
-      --cctv-text: #d8d4cc;
-      --cctv-dim: #8a867c;
-      --cctv-mute: #5c5a54;
-      --cctv-green: #6b8f71;
+      /* Bridge site variables into CCTV-specific names */
+      --cctv-green: var(--color-accent);
       --cctv-green-dim: rgba(107, 143, 113, 0.1);
       --cctv-red: #a84848;
       --cctv-red-dim: rgba(168, 72, 72, 0.1);
-      --cctv-font: 'Noto Serif TC', 'Source Han Serif TC', serif;
 
-      position: relative;
       width: 100%;
-      height: calc(100vh - 60px);
-      background: var(--cctv-bg);
-      color: var(--cctv-text);
-      font-family: var(--cctv-font);
-      overflow: hidden;
-      margin: 0 -1.5rem;
-      padding: 0;
+      max-width: none;
+      color: var(--color-text);
+      font-family: var(--font-body);
     }
 
-    .cctv-app *, .cctv-app *::before, .cctv-app *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Make the parent <main> full width for this page */
+    main:has(.cctv-app) {
+      max-width: none;
+      padding: 1.5rem;
+    }
 
     /* ── Splash ── */
     .cctv-splash {
-      position: absolute;
+      position: fixed;
       inset: 0;
       z-index: 9999;
-      background: var(--cctv-bg);
+      background: var(--color-bg);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -167,7 +157,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     .cctv-splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
 
     .splash-cam {
-      color: var(--cctv-green);
+      color: var(--color-accent);
       animation: cctv-cam-in 0.6s ease both;
     }
     .cam-svg { width: 64px; height: 64px; display: block; }
@@ -181,50 +171,51 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     .splash-osd {
       font-size: 11px;
       letter-spacing: 3px;
-      color: var(--cctv-mute);
+      color: var(--color-muted);
+      font-family: var(--font-heading);
     }
     .splash-title {
       font-size: 18px;
       font-weight: 600;
-      color: var(--cctv-text);
+      color: var(--color-text);
+      font-family: var(--font-heading);
     }
     .splash-bar {
       width: 88px;
       height: 1px;
-      background: var(--cctv-line);
+      background: var(--color-border);
       overflow: hidden;
     }
     .splash-bar span {
       display: block;
       height: 100%;
       width: 0;
-      background: var(--cctv-green);
+      background: var(--color-accent);
       animation: cctv-boot 1.5s ease forwards;
     }
     @keyframes cctv-boot { to { width: 100%; } }
 
-    /* ── Header ── */
-    .cctv-hdr {
-      height: 48px;
+    /* ── Status Bar (replaces CCTV header) ── */
+    .cctv-status-bar {
       display: flex;
       align-items: center;
-      padding: 0 16px;
-      gap: 16px;
-      background: var(--cctv-surface);
-      border-bottom: 1px solid var(--cctv-line);
-      flex-shrink: 0;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid var(--color-border);
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
     }
-    .hdr-brand {
+    .status-left {
       display: flex;
       align-items: center;
-      gap: 10px;
-      min-width: 0;
+      gap: 8px;
     }
     .hdr-rec-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: var(--cctv-mute);
+      background: var(--color-muted);
       flex-shrink: 0;
       display: none;
     }
@@ -233,32 +224,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       background: var(--cctv-red);
       animation: cctv-rec-blink 1s step-end infinite;
     }
-    .hdr-title {
-      font-size: 15px;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .hdr-status {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
     .sig {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: var(--cctv-mute);
+      background: var(--color-muted);
     }
-    .sig.on { background: var(--cctv-green); }
+    .sig.on { background: var(--color-accent); }
     .sig.off { background: var(--cctv-red); animation: cctv-rec-blink 0.8s step-end infinite; }
-    .sig-txt { font-size: 11px; color: var(--cctv-dim); }
-    .hdr-clock {
-      font-size: 15px;
+    .sig-txt { font-size: 0.75rem; color: var(--color-muted); }
+    .cctv-clock {
+      font-size: 0.85rem;
       font-weight: 500;
-      color: var(--cctv-text);
+      color: var(--color-text);
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.5px;
     }
@@ -268,26 +246,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       50% { opacity: 0.25; }
     }
 
+    /* ── CORS Warning ── */
+    .cctv-cors-warn {
+      display: none;
+      padding: 0.5rem 0;
+      font-size: 0.8rem;
+      color: var(--color-muted);
+    }
+    .cctv-cors-warn.show { display: block; }
+
     /* ── Layout ── */
     .cctv-layout {
       display: grid;
       grid-template-columns: 1fr 260px;
+      gap: 1rem;
       min-height: 0;
-      flex: 1;
     }
-    .cctv-cors-warn {
-      display: none;
-      padding: 6px 16px;
-      font-size: 12px;
-      color: var(--cctv-dim);
-      background: var(--cctv-surface);
-      border-bottom: 1px solid var(--cctv-line);
-    }
-    .cctv-cors-warn.show { display: block; }
 
-    /* ── Monitor ── */
+    /* ── Monitor (dark by nature — screens are always dark) ── */
     .cctv-main {
-      padding: 10px;
       min-height: 0;
       display: flex;
     }
@@ -297,20 +274,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       display: flex;
       flex-direction: column;
       min-height: 0;
-      background: var(--cctv-surface);
-      border: 1px solid var(--cctv-line);
-      padding: 8px;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 6px;
+      overflow: hidden;
     }
-    .bezel:fullscreen { padding: 0; background: #000; border: none; }
+    .bezel:fullscreen { padding: 0; background: #000; border-radius: 0; border: none; }
     .bezel:fullscreen .toolbar { display: none; }
-    .bezel:fullscreen .bezel-inner { border: none; }
+    .bezel:fullscreen .bezel-inner { border: none; border-radius: 0; }
 
     .bezel-inner {
       flex: 1;
       display: flex;
       flex-direction: column;
       min-height: 0;
-      border: 1px solid var(--cctv-line);
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
       background: #000;
     }
 
@@ -342,6 +322,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       position: absolute;
       z-index: 6;
       font-size: 12px;
+      font-family: var(--font-heading);
       pointer-events: none;
     }
     .osd-tl { top: 10px; left: 12px; display: flex; gap: 10px; }
@@ -355,9 +336,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       animation: cctv-rec-blink 1s step-end infinite;
     }
     .osd-rec.show { display: inline; }
-    .osd-ch { color: var(--cctv-dim); font-size: 11px; }
-    .osd-ts { color: var(--cctv-text); font-size: 13px; font-variant-numeric: tabular-nums; }
-    .osd-zoom-lvl { color: var(--cctv-mute); font-size: 11px; }
+    .osd-ch { color: #888; font-size: 11px; }
+    .osd-ts { color: #ccc; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .osd-zoom-lvl { color: #666; font-size: 11px; }
 
     .frame-load {
       position: absolute;
@@ -368,17 +349,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       align-items: center;
       justify-content: center;
       gap: 14px;
-      background: rgba(14, 14, 12, 0.92);
+      background: rgba(0, 0, 0, 0.88);
       font-size: 12px;
-      color: var(--cctv-dim);
+      font-family: var(--font-heading);
+      color: #888;
       transition: opacity 0.35s;
     }
     .frame-load.hide { opacity: 0; pointer-events: none; }
     .load-ring {
       width: 28px;
       height: 28px;
-      border: 1px solid var(--cctv-line2);
-      border-top-color: var(--cctv-green);
+      border: 1px solid #333;
+      border-top-color: var(--color-accent);
       border-radius: 50%;
       animation: cctv-spin 0.9s linear infinite;
     }
@@ -389,47 +371,52 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 7px 8px;
-      background: var(--cctv-surface);
-      border-top: 1px solid var(--cctv-line);
+      padding: 6px 8px;
+      background: #1a1a1a;
+      border-top: 1px solid #2a2a2a;
       flex-shrink: 0;
       gap: 8px;
     }
     .zoom-group, .tb-actions { display: flex; align-items: center; gap: 4px; }
     .tb-label {
       font-size: 11px;
-      color: var(--cctv-mute);
+      font-family: var(--font-heading);
+      color: #666;
       margin-right: 4px;
     }
     .tb-btn {
       min-width: 34px;
       padding: 4px 8px;
-      border: 1px solid var(--cctv-line2);
+      border: 1px solid #3a3a3a;
       background: transparent;
-      color: var(--cctv-dim);
-      font-family: var(--cctv-font);
+      color: #888;
+      font-family: var(--font-heading);
       font-size: 12px;
       cursor: pointer;
+      border-radius: 4px;
+      transition: border-color 0.15s, color 0.15s;
     }
-    .tb-btn:hover { border-color: var(--cctv-text); color: var(--cctv-text); }
+    .tb-btn:hover { border-color: #ccc; color: #ccc; }
     .tb-btn.on {
-      border-color: var(--cctv-green);
-      color: var(--cctv-green);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
       background: var(--cctv-green-dim);
     }
     .tb-fs { min-width: 52px; }
 
-    /* ── Panel ── */
+    /* ── Panel (follows site theme) ── */
     .cctv-panel {
-      border-left: 1px solid var(--cctv-line);
-      background: var(--cctv-panel);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-bg);
       display: flex;
       flex-direction: column;
       min-height: 0;
+      overflow: hidden;
     }
     .panel-block {
       padding: 12px 14px;
-      border-bottom: 1px solid var(--cctv-line);
+      border-bottom: 1px solid var(--color-border);
       flex-shrink: 0;
     }
     .panel-block.grow {
@@ -440,23 +427,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       overflow: hidden;
     }
     .panel-hd {
-      font-size: 11px;
-      color: var(--cctv-mute);
+      font-size: 0.7rem;
+      font-family: var(--font-heading);
+      color: var(--color-muted);
       margin-bottom: 8px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
     .panel-row { display: flex; align-items: center; gap: 8px; }
 
     .btn-rec {
       flex: 1;
       padding: 7px 0;
-      border: 1px solid var(--cctv-line2);
+      border: 1px solid var(--color-border);
       background: transparent;
-      color: var(--cctv-text);
-      font-family: var(--cctv-font);
-      font-size: 13px;
+      color: var(--color-text);
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
       cursor: pointer;
+      border-radius: 6px;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
     }
-    .btn-rec:hover { border-color: var(--cctv-green); color: var(--cctv-green); }
+    .btn-rec:hover { border-color: var(--color-accent); color: var(--color-accent); }
     .btn-rec.active {
       border-color: var(--cctv-red);
       color: var(--cctv-red);
@@ -465,14 +457,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     .btn-rec:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .rec-time {
-      font-size: 13px;
-      color: var(--cctv-dim);
+      font-size: 0.85rem;
+      font-family: var(--font-heading);
+      color: var(--color-muted);
       min-width: 56px;
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
     .rec-time.warn { color: var(--cctv-red); }
-    .rec-hint { margin-top: 6px; font-size: 11px; color: var(--cctv-mute); }
+    .rec-hint { margin-top: 6px; font-size: 0.7rem; font-family: var(--font-heading); color: var(--color-muted); }
     .rec-hint.on { color: var(--cctv-red); }
 
     .stats {
@@ -483,20 +476,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     .stat {
       padding: 10px;
       text-align: center;
-      border-right: 1px solid var(--cctv-line);
+      border-right: 1px solid var(--color-border);
     }
     .stat:last-child { border-right: none; }
     .stat-n {
       display: block;
-      font-size: 20px;
+      font-size: 1.25rem;
       font-weight: 600;
+      font-family: var(--font-heading);
       font-variant-numeric: tabular-nums;
+      color: var(--color-text);
     }
     .stat-l {
       display: block;
       margin-top: 2px;
-      font-size: 11px;
-      color: var(--cctv-mute);
+      font-size: 0.65rem;
+      font-family: var(--font-heading);
+      color: var(--color-muted);
+      letter-spacing: 0.05em;
     }
 
     .date-list { max-height: 88px; overflow-y: auto; margin-bottom: 6px; }
@@ -504,48 +501,52 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       display: flex;
       justify-content: space-between;
       padding: 5px 8px;
-      font-size: 12px;
+      font-size: 0.8rem;
       cursor: pointer;
       border-left: 2px solid transparent;
-      color: var(--cctv-dim);
+      color: var(--color-muted);
+      transition: background 0.15s, color 0.15s;
     }
-    .d-item:hover { background: var(--cctv-surface); color: var(--cctv-text); }
-    .d-item.on { border-left-color: var(--cctv-green); background: var(--cctv-surface); color: var(--cctv-text); }
-    .d-cnt { color: var(--cctv-mute); font-size: 11px; }
+    .d-item:hover { background: var(--color-border); color: var(--color-text); }
+    .d-item.on { border-left-color: var(--color-accent); background: var(--color-border); color: var(--color-text); }
+    .d-cnt { color: var(--color-muted); font-size: 0.7rem; }
 
     .file-list { flex: 1; overflow-y: auto; min-height: 0; }
-    .f-grp { font-size: 11px; color: var(--cctv-mute); padding: 4px 8px; }
+    .f-grp { font-size: 0.7rem; font-family: var(--font-heading); color: var(--color-muted); padding: 4px 8px; }
     .f-item {
       display: grid;
       grid-template-columns: 58px 1fr auto;
       align-items: center;
       gap: 4px;
       padding: 6px 8px;
-      font-size: 12px;
+      font-size: 0.8rem;
       cursor: pointer;
-      border-bottom: 1px solid var(--cctv-line);
+      border-bottom: 1px solid var(--color-border);
+      transition: background 0.15s;
     }
-    .f-item:hover { background: var(--cctv-surface); }
-    .f-time { font-size: 12px; font-variant-numeric: tabular-nums; }
-    .f-sz { font-size: 11px; color: var(--cctv-mute); }
+    .f-item:hover { background: var(--color-border); }
+    .f-time { font-size: 0.8rem; font-family: var(--font-heading); font-variant-numeric: tabular-nums; }
+    .f-sz { font-size: 0.7rem; color: var(--color-muted); }
     .f-act { display: flex; gap: 2px; opacity: 0; transition: opacity 0.1s; }
     .f-item:hover .f-act { opacity: 1; }
     .f-act button {
       background: none;
       border: none;
-      color: var(--cctv-mute);
-      font-family: var(--cctv-font);
-      font-size: 11px;
+      color: var(--color-muted);
+      font-family: var(--font-heading);
+      font-size: 0.7rem;
       padding: 2px 4px;
       cursor: pointer;
+      transition: color 0.15s;
     }
-    .f-act button:hover { color: var(--cctv-text); }
+    .f-act button:hover { color: var(--color-accent); }
 
     .empty {
       padding: 20px;
       text-align: center;
-      font-size: 12px;
-      color: var(--cctv-mute);
+      font-size: 0.8rem;
+      font-family: var(--font-heading);
+      color: var(--color-muted);
     }
 
     .stor {
@@ -554,42 +555,40 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       align-items: center;
       gap: 8px;
     }
-    .stor-lbl { font-size: 11px; color: var(--cctv-mute); }
-    .stor-track { height: 1px; background: var(--cctv-line); overflow: hidden; }
-    .stor-fill { height: 100%; width: 0; background: var(--cctv-green); transition: width 0.5s; }
-    .stor-val { font-size: 11px; color: var(--cctv-dim); font-variant-numeric: tabular-nums; }
+    .stor-lbl { font-size: 0.7rem; font-family: var(--font-heading); color: var(--color-muted); }
+    .stor-track { height: 2px; background: var(--color-border); overflow: hidden; border-radius: 1px; }
+    .stor-fill { height: 100%; width: 0; background: var(--color-accent); transition: width 0.5s; border-radius: 1px; }
+    .stor-val { font-size: 0.7rem; font-family: var(--font-heading); color: var(--color-muted); font-variant-numeric: tabular-nums; }
 
     /* ── SweetAlert2 ── */
     .ny-swal {
-      border: 1px solid var(--cctv-line) !important;
-      border-radius: 0 !important;
-      background: var(--cctv-surface) !important;
-      font-family: var(--cctv-font) !important;
+      border: 1px solid var(--color-border) !important;
+      border-radius: 10px !important;
+      background: var(--color-bg) !important;
+      font-family: var(--font-body) !important;
     }
     .ny-swal-title {
-      font-family: var(--cctv-font) !important;
-      font-size: 16px !important;
+      font-family: var(--font-heading) !important;
+      font-size: 1rem !important;
       font-weight: 600 !important;
-      color: var(--cctv-text) !important;
+      color: var(--color-text) !important;
     }
-    .ny-swal-body { font-size: 13px !important; color: var(--cctv-dim) !important; }
+    .ny-swal-body { font-size: 0.85rem !important; color: var(--color-muted) !important; }
     .ny-swal-confirm, .ny-swal-cancel {
-      font-family: var(--cctv-font) !important;
-      font-size: 13px !important;
-      border-radius: 0 !important;
+      font-family: var(--font-heading) !important;
+      font-size: 0.85rem !important;
+      border-radius: 6px !important;
     }
-    .ny-swal-confirm { background: var(--cctv-green) !important; color: #fff !important; }
-    .ny-swal-close { color: var(--cctv-mute) !important; }
-    .swal-video { width: 100%; max-height: 70vh; background: #000; display: block; }
-    .swal-prog { font-size: 12px; color: var(--cctv-dim); }
-    .swal2-loader { border-color: var(--cctv-green) transparent var(--cctv-green) transparent !important; }
+    .ny-swal-confirm { background: var(--color-accent) !important; color: #fff !important; }
+    .ny-swal-close { color: var(--color-muted) !important; }
+    .swal-video { width: 100%; max-height: 70vh; background: #000; display: block; border-radius: 6px; }
+    .swal-prog { font-size: 0.8rem; color: var(--color-muted); }
+    .swal2-loader { border-color: var(--color-accent) transparent var(--color-accent) transparent !important; }
 
     @media (max-width: 800px) {
-      .cctv-app { margin: 0 -1rem; }
       .cctv-layout { grid-template-columns: 1fr; }
-      .cctv-panel { border-left: none; border-top: 1px solid var(--cctv-line); max-height: 320px; }
+      .cctv-panel { max-height: 320px; overflow-y: auto; }
       .cctv-main { min-height: 240px; }
-      .hdr-title { font-size: 14px; }
       .toolbar { flex-wrap: wrap; }
     }
   </style>
