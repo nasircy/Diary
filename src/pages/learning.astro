@@ -7,20 +7,58 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <h1>學習記錄</h1>
     <p style="color: var(--color-muted); margin-bottom: 2rem;">記錄我的學習進度，還有一些筆記，幫助我思考。</p>
 
+    <!-- ── TOEIC 不熟單字 ── -->
     <article>
-      <details class="py-card" id="py-card">
-        <summary class="py-card-summary">
-          <div class="py-card-left">
-            <span class="py-card-icon">🐍</span>
+      <details class="lc-card" id="voc-card">
+        <summary class="lc-card-summary">
+          <div class="lc-card-left">
+            <span class="lc-card-icon">📖</span>
             <div>
-              <h3 class="py-card-title">Python 線上練習</h3>
-              <p class="py-card-desc">直接在瀏覽器裏跑 Python。</p>
+              <h3 class="lc-card-title">TOEIC 不熟單字</h3>
+              <p class="lc-card-desc">背單字刷題，支援多種題型。</p>
             </div>
           </div>
-          <span class="py-card-arrow">›</span>
+          <span class="lc-card-arrow">›</span>
         </summary>
 
-        <div class="py-card-body">
+        <div class="lc-card-body">
+          <!-- Day selector -->
+          <div id="voc-day-list" class="voc-day-list"></div>
+
+          <!-- Quiz area -->
+          <div id="voc-quiz" class="voc-quiz" style="display:none">
+            <div class="voc-quiz-header">
+              <span class="voc-quiz-title" id="voc-quiz-title">Day 1</span>
+              <span class="voc-quiz-progress" id="voc-quiz-progress">1 / 20</span>
+            </div>
+            <div class="voc-quiz-body" id="voc-quiz-body"></div>
+            <div class="voc-quiz-footer">
+              <span class="voc-quiz-score" id="voc-quiz-score">✓ 0 &nbsp; ✗ 0</span>
+              <button class="voc-quiz-next" id="voc-quiz-next" style="display:none">下一題 →</button>
+            </div>
+          </div>
+
+          <!-- Result area -->
+          <div id="voc-result" class="voc-result" style="display:none"></div>
+        </div>
+      </details>
+    </article>
+
+    <!-- ── Python 線上練習 ── -->
+    <article>
+      <details class="lc-card" id="py-card">
+        <summary class="lc-card-summary">
+          <div class="lc-card-left">
+            <span class="lc-card-icon">🐍</span>
+            <div>
+              <h3 class="lc-card-title">Python 線上練習</h3>
+              <p class="lc-card-desc">直接在瀏覽器裏跑 Python。</p>
+            </div>
+          </div>
+          <span class="lc-card-arrow">›</span>
+        </summary>
+
+        <div class="lc-card-body">
           <div class="py-runner">
             <div class="py-toolbar">
               <span class="py-label">Python</span>
@@ -46,20 +84,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </section>
 
   <style>
-    /* ── Collapsible Card ── */
-    .py-card {
+    /* ── Collapsible Card (shared) ── */
+    .lc-card {
       border: 1px solid var(--color-border);
       border-radius: 10px;
       overflow: hidden;
       margin-bottom: 1.5rem;
       transition: border-color 0.2s;
     }
+    .lc-card[open] { border-color: var(--color-accent); }
 
-    .py-card[open] {
-      border-color: var(--color-accent);
-    }
-
-    .py-card-summary {
+    .lc-card-summary {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -69,83 +104,211 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       transition: background 0.15s;
       user-select: none;
     }
+    .lc-card-summary::-webkit-details-marker { display: none; }
+    .lc-card-summary::marker { content: ''; }
+    .lc-card-summary:hover { background: var(--color-border); }
 
-    .py-card-summary::-webkit-details-marker { display: none; }
-    .py-card-summary::marker { content: ''; }
-
-    .py-card-summary:hover {
-      background: var(--color-border);
-    }
-
-    .py-card-left {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-    }
-
-    .py-card-icon {
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .py-card-title {
+    .lc-card-left { display: flex; align-items: center; gap: 0.85rem; }
+    .lc-card-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .lc-card-title {
       font-family: var(--font-heading);
       font-size: 1.1rem;
       font-weight: 600;
       color: var(--color-text);
       margin: 0;
     }
-
-    .py-card-desc {
+    .lc-card-desc {
       font-size: 0.85rem;
       color: var(--color-muted);
       margin: 0.15rem 0 0;
     }
-
-    .py-card-arrow {
+    .lc-card-arrow {
       font-size: 1.2rem;
       color: var(--color-muted);
       transition: transform 0.2s;
       flex-shrink: 0;
     }
-
-    .py-card[open] .py-card-arrow {
-      transform: rotate(90deg);
-    }
-
-    .py-card-body {
+    .lc-card[open] .lc-card-arrow { transform: rotate(90deg); }
+    .lc-card-body {
       border-top: 1px solid var(--color-border);
       padding: 1rem;
     }
 
-    /* ── Runner ── */
-    .py-runner {
+    /* ── VOC Day List ── */
+    .voc-day-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.6rem;
+    }
+    .voc-day-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.9rem;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      color: var(--color-text);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .voc-day-btn:hover {
+      border-color: var(--color-accent);
+      background: var(--color-border);
+    }
+    .voc-day-cnt {
+      font-size: 0.7rem;
+      color: var(--color-muted);
+    }
+    .voc-day-loading {
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--color-muted);
+    }
+
+    /* ── VOC Quiz ── */
+    .voc-quiz {
       border: 1px solid var(--color-border);
       border-radius: 8px;
       overflow: hidden;
     }
-
-    .py-toolbar {
+    .voc-quiz-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.5rem 0.85rem;
+      padding: 0.6rem 0.9rem;
       background: var(--color-border);
       border-bottom: 1px solid var(--color-border);
     }
+    .voc-quiz-title {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .voc-quiz-progress {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+    }
 
-    .py-label {
+    .voc-quiz-body {
+      padding: 1.2rem;
+      min-height: 160px;
+    }
+    .voc-question-type {
+      font-size: 0.7rem;
+      font-family: var(--font-heading);
+      color: var(--color-accent);
+      margin-bottom: 0.6rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .voc-question-word {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 1rem;
+    }
+    .voc-question-hint {
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    /* Type answer input */
+    .voc-input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .voc-input {
+      flex: 1;
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .voc-input:focus { border-color: var(--color-accent); }
+    .voc-input.correct { border-color: #4caf50; background: rgba(76,175,80,0.08); }
+    .voc-input.wrong { border-color: #e53935; background: rgba(229,57,53,0.08); }
+
+    .voc-submit-btn {
+      padding: 0.5rem 1rem;
+      background: var(--color-accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .voc-submit-btn:hover { opacity: 0.85; }
+
+    /* Multiple choice */
+    .voc-choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .voc-choice {
+      padding: 0.65rem 0.9rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      text-align: left;
+    }
+    .voc-choice:hover:not(.chosen) { border-color: var(--color-accent); background: var(--color-border); }
+    .voc-choice.correct-choice { border-color: #4caf50; background: rgba(76,175,80,0.1); color: #4caf50; }
+    .voc-choice.wrong-choice { border-color: #e53935; background: rgba(229,57,53,0.1); color: #e53935; }
+    .voc-choice.chosen { pointer-events: none; }
+
+    /* Feedback */
+    .voc-feedback {
+      margin-top: 0.8rem;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: var(--font-heading);
+    }
+    .voc-feedback.correct-fb {
+      background: rgba(76,175,80,0.08);
+      color: #4caf50;
+    }
+    .voc-feedback.wrong-fb {
+      background: rgba(229,57,53,0.08);
+      color: #e53935;
+    }
+
+    .voc-quiz-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.9rem;
+      border-top: 1px solid var(--color-border);
+      background: var(--color-border);
+    }
+    .voc-quiz-score {
       font-family: var(--font-heading);
       font-size: 0.8rem;
       color: var(--color-muted);
-      letter-spacing: 0.03em;
     }
-
-    .py-run-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.3rem 0.8rem;
+    .voc-quiz-next {
+      padding: 0.35rem 0.8rem;
       background: var(--color-accent);
       color: #fff;
       border: none;
@@ -153,140 +316,395 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       font-family: var(--font-heading);
       font-size: 0.8rem;
       cursor: pointer;
-      transition: opacity 0.15s;
     }
+    .voc-quiz-next:hover { opacity: 0.85; }
 
-    .py-run-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    /* ── VOC Result ── */
+    .voc-result {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
     }
-
-    .py-run-btn:not(:disabled):hover {
-      opacity: 0.85;
-    }
-
-    .py-run-icon {
-      font-size: 0.65rem;
-    }
-
-    .py-editor {
-      width: 100%;
-      min-height: 220px;
-      padding: 1rem;
-      background: var(--color-bg);
-      color: var(--color-text);
-      border: none;
-      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-      font-size: 0.85rem;
-      line-height: 1.7;
-      resize: vertical;
-      outline: none;
-      tab-size: 4;
-    }
-
-    .py-editor::placeholder {
-      color: var(--color-muted);
-      opacity: 0.6;
-    }
-
-    .py-output-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.4rem 0.85rem;
-      background: var(--color-border);
-      border-top: 1px solid var(--color-border);
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    .py-status {
-      font-size: 0.7rem;
+    .voc-result-title {
       font-family: var(--font-heading);
-      color: var(--color-muted);
-    }
-
-    .py-output {
-      padding: 1rem;
-      min-height: 80px;
-      max-height: 300px;
-      overflow-y: auto;
-      background: var(--color-bg);
+      font-size: 1.3rem;
+      font-weight: 600;
       color: var(--color-text);
-      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-      font-size: 0.85rem;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      word-break: break-all;
-      margin: 0;
+      margin-bottom: 0.5rem;
     }
-
-    .py-output.has-error {
-      color: var(--cctv-red, #a84848);
+    .voc-result-score {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--font-heading);
+      color: var(--color-accent);
+      margin-bottom: 0.3rem;
     }
-
-    .py-output.running {
+    .voc-result-pct {
+      font-size: 0.9rem;
       color: var(--color-muted);
+      margin-bottom: 1rem;
+    }
+    .voc-result-detail {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+    .voc-result-word {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 0.85rem;
+    }
+    .voc-result-word:last-child { border-bottom: none; }
+    .voc-result-word .wrong-word { color: #e53935; }
+    .voc-result-word .correct-word { color: #4caf50; }
+
+    .voc-back-btn {
+      padding: 0.5rem 1.2rem;
+      background: var(--color-accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .voc-back-btn:hover { opacity: 0.85; }
+
+    /* ── Python Runner (same as before) ── */
+    .py-runner { border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
+    .py-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.85rem; background: var(--color-border); border-bottom: 1px solid var(--color-border); }
+    .py-label { font-family: var(--font-heading); font-size: 0.8rem; color: var(--color-muted); letter-spacing: 0.03em; }
+    .py-run-btn { display: flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.8rem; background: var(--color-accent); color: #fff; border: none; border-radius: 6px; font-family: var(--font-heading); font-size: 0.8rem; cursor: pointer; transition: opacity 0.15s; }
+    .py-run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .py-run-btn:not(:disabled):hover { opacity: 0.85; }
+    .py-run-icon { font-size: 0.65rem; }
+    .py-editor { width: 100%; min-height: 220px; padding: 1rem; background: var(--color-bg); color: var(--color-text); border: none; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.7; resize: vertical; outline: none; tab-size: 4; }
+    .py-editor::placeholder { color: var(--color-muted); opacity: 0.6; }
+    .py-output-header { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.85rem; background: var(--color-border); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+    .py-status { font-size: 0.7rem; font-family: var(--font-heading); color: var(--color-muted); }
+    .py-output { padding: 1rem; min-height: 80px; max-height: 300px; overflow-y: auto; background: var(--color-bg); color: var(--color-text); font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.7; white-space: pre-wrap; word-break: break-all; margin: 0; }
+    .py-output.has-error { color: #a84848; }
+    .py-output.running { color: var(--color-muted); }
+
+    @media (max-width: 640px) {
+      .voc-choices { grid-template-columns: 1fr; }
+      .voc-day-list { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
     }
   </style>
 
   <script>
-    const card = document.getElementById('py-card') as HTMLDetailsElement;
-    const runBtn = document.getElementById('py-run-btn') as HTMLButtonElement;
-    const editor = document.getElementById('py-editor') as HTMLTextAreaElement;
-    const output = document.getElementById('py-output') as HTMLPreElement;
-    const status = document.getElementById('py-status') as HTMLSpanElement;
-    const runText = document.getElementById('py-run-text') as HTMLSpanElement;
+    /* ============================================================
+       TOEIC VOC Quiz
+       ============================================================ */
+    (function () {
+      const BASE = (import.meta as any).env?.BASE_URL || '/Diary/';
+      const VOC_BASE = BASE + 'voc/';
+      const STORAGE_KEY = 'toeic-voc-history';
+      const MAX_DAY = 365;
 
-    let pyodide: any = null;
-    let loading = false;
-    let loaded = false;
+      const dayListEl = document.getElementById('voc-day-list')!;
+      const quizEl = document.getElementById('voc-quiz')!;
+      const quizTitle = document.getElementById('voc-quiz-title')!;
+      const quizProgress = document.getElementById('voc-quiz-progress')!;
+      const quizBody = document.getElementById('voc-quiz-body')!;
+      const quizScore = document.getElementById('voc-quiz-score')!;
+      const quizNext = document.getElementById('voc-quiz-next')! as HTMLButtonElement;
+      const resultEl = document.getElementById('voc-result')!;
+      const vocCard = document.getElementById('voc-card') as HTMLDetailsElement;
 
-    async function initPyodide() {
-      if (pyodide || loading) return;
-      loading = true;
-      status.textContent = '載入中…';
-      output.textContent = '正在下載 Python 執行環境（約 8MB），請稍候…';
+      let allDays: number[] = [];
+      let currentWords: { en: string; zh: string }[] = [];
+      let currentDay = 0;
+      let qIndex = 0;
+      let correct = 0;
+      let wrong = 0;
+      let answered = false;
+      let wrongWords: { en: string; zh: string }[] = [];
 
-      try {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
-        document.head.appendChild(script);
-        await new Promise<void>((resolve, reject) => {
-          script.onload = () => resolve();
-          script.onerror = () => reject(new Error('Failed to load Pyodide script'));
-        });
-
-        // @ts-ignore — loadPyodide is a global from pyodide.js
-        pyodide = await window.loadPyodide();
-        loaded = true;
-        status.textContent = '已就緒';
-        output.textContent = 'Python 環境已就緒，可以開始寫 code 了。';
-        runBtn.disabled = false;
-      } catch (e: any) {
-        status.textContent = '載入失敗';
-        output.textContent = 'Python 執行環境載入失敗：' + (e.message || e);
-      } finally {
-        loading = false;
+      function loadHistory(): Record<number, { correct: number; wrong: number; date: string }> {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
       }
-    }
+      function saveHistory(day: number, c: number, w: number) {
+        const h = loadHistory();
+        h[day] = { correct: c, wrong: w, date: new Date().toISOString().slice(0, 10) };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(h));
+      }
 
-    async function runCode() {
-      if (!pyodide) return;
+      async function discoverDays() {
+        dayListEl.innerHTML = '<div class="voc-day-loading">載入中…</div>';
+        allDays = [];
+        const checks: Promise<void>[] = [];
+        for (let d = 1; d <= MAX_DAY; d++) {
+          checks.push(
+            fetch(VOC_BASE + `day${d}.json`, { method: 'HEAD' })
+              .then(r => { if (r.ok) allDays.push(d); })
+              .catch(() => {})
+          );
+        }
+        await Promise.all(checks);
+        allDays.sort((a, b) => a - b);
+        renderDayList();
+      }
 
-      const code = editor.value.trim();
-      if (!code) return;
+      function renderDayList() {
+        if (!allDays.length) {
+          dayListEl.innerHTML = '<div class="voc-day-loading">還沒有單字檔案。</div>';
+          return;
+        }
+        const hist = loadHistory();
+        dayListEl.innerHTML = allDays.map(d => {
+          const h = hist[d];
+          const badge = h ? `<span class="voc-day-cnt">✓${h.correct} ✗${h.wrong}</span>` : '';
+          return `<button class="voc-day-btn" data-day="${d}"><span>TOEIC VOC DAY ${d}</span>${badge}</button>`;
+        }).join('');
 
-      runBtn.disabled = true;
-      runText.textContent = '執行中…';
-      output.textContent = '';
-      output.classList.remove('has-error');
-      output.classList.add('running');
-      status.textContent = '執行中…';
+        dayListEl.querySelectorAll('.voc-day-btn').forEach(btn => {
+          btn.addEventListener('click', () => startQuiz(parseInt((btn as HTMLElement).dataset.day!)));
+        });
+      }
 
-      await new Promise(r => setTimeout(r, 50));
+      async function startQuiz(day: number) {
+        currentDay = day;
+        try {
+          const r = await fetch(VOC_BASE + `day${day}.json`);
+          const data = await r.json();
+          currentWords = data.words;
+        } catch {
+          dayListEl.innerHTML = '<div class="voc-day-loading">載入失敗。</div>';
+          return;
+        }
+        qIndex = 0; correct = 0; wrong = 0; wrongWords = [];
+        shuffle(currentWords);
+        dayListEl.style.display = 'none';
+        resultEl.style.display = 'none';
+        quizEl.style.display = 'block';
+        quizNext.style.display = 'none';
+        renderQuestion();
+      }
 
-      try {
-        pyodide.runPython(`
+      function renderQuestion() {
+        if (qIndex >= currentWords.length) { showResult(); return; }
+        answered = false;
+        quizTitle.textContent = `TOEIC VOC DAY ${currentDay}`;
+        quizProgress.textContent = `${qIndex + 1} / ${currentWords.length}`;
+        quizScore.textContent = `✓ ${correct}  ✗ ${wrong}`;
+        quizNext.style.display = 'none';
+
+        const word = currentWords[qIndex];
+        const mode = Math.floor(Math.random() * 3); // 0: type en, 1: pick zh from en, 2: pick en from zh
+
+        if (mode === 0) {
+          renderTypeEn(word);
+        } else if (mode === 1) {
+          renderPickZhFromEn(word);
+        } else {
+          renderPickEnFromZh(word);
+        }
+      }
+
+      function renderTypeEn(word: { en: string; zh: string }) {
+        quizBody.innerHTML = `
+          <div class="voc-question-type">輸入英文</div>
+          <div class="voc-question-word">${word.zh}</div>
+          <div class="voc-question-hint">請打出正確的英文單字</div>
+          <div class="voc-input-row">
+            <input class="voc-input" id="voc-answer" type="text" autocomplete="off" spellcheck="false" placeholder="輸入英文…" />
+            <button class="voc-submit-btn" id="voc-submit">確認</button>
+          </div>
+          <div id="voc-feedback"></div>
+        `;
+        const input = document.getElementById('voc-answer') as HTMLInputElement;
+        const submitBtn = document.getElementById('voc-submit') as HTMLButtonElement;
+        const fb = document.getElementById('voc-feedback')!;
+
+        function checkAnswer() {
+          if (answered) return;
+          answered = true;
+          const ans = input.value.trim().toLowerCase();
+          const correctAns = word.en.toLowerCase();
+          if (ans === correctAns) {
+            correct++;
+            input.classList.add('correct');
+            fb.innerHTML = `<div class="voc-feedback correct-fb">✓ 正確！</div>`;
+          } else {
+            wrong++;
+            wrongWords.push(word);
+            input.classList.add('wrong');
+            fb.innerHTML = `<div class="voc-feedback wrong-fb">✗ 答案：${word.en}</div>`;
+          }
+          quizScore.textContent = `✓ ${correct}  ✗ ${wrong}`;
+          submitBtn.style.display = 'none';
+          input.disabled = true;
+          quizNext.style.display = 'inline-block';
+        }
+
+        submitBtn.addEventListener('click', checkAnswer);
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+        input.focus();
+      }
+
+      function renderPickZhFromEn(word: { en: string; zh: string }) {
+        const options = pickDistractors(word, 'zh');
+        quizBody.innerHTML = `
+          <div class="voc-question-type">選中文</div>
+          <div class="voc-question-word">${word.en}</div>
+          <div class="voc-choices">${options.map(o => `<button class="voc-choice" data-val="${o}">${o}</button>`).join('')}</div>
+          <div id="voc-feedback"></div>
+        `;
+        bindChoices(word, 'zh');
+      }
+
+      function renderPickEnFromZh(word: { en: string; zh: string }) {
+        const options = pickDistractors(word, 'en');
+        quizBody.innerHTML = `
+          <div class="voc-question-type">選英文</div>
+          <div class="voc-question-word">${word.zh}</div>
+          <div class="voc-choices">${options.map(o => `<button class="voc-choice" data-val="${o}">${o}</button>`).join('')}</div>
+          <div id="voc-feedback"></div>
+        `;
+        bindChoices(word, 'en');
+      }
+
+      function pickDistractors(word: { en: string; zh: string }, field: 'en' | 'zh'): string[] {
+        const pool = currentWords.filter(w => w[field] !== word[field]);
+        shuffle(pool);
+        const distractors = pool.slice(0, 3).map(w => w[field]);
+        const options = [...distractors, word[field]];
+        shuffle(options);
+        return options;
+      }
+
+      function bindChoices(word: { en: string; zh: string }, field: 'en' | 'zh') {
+        const fb = document.getElementById('voc-feedback')!;
+        quizBody.querySelectorAll('.voc-choice').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (answered) return;
+            answered = true;
+            const val = (btn as HTMLElement).dataset.val!;
+            const correctVal = word[field];
+            (btn as HTMLElement).classList.add('chosen');
+
+            if (val === correctVal) {
+              correct++;
+              (btn as HTMLElement).classList.add('correct-choice');
+              fb.innerHTML = `<div class="voc-feedback correct-fb">✓ 正確！</div>`;
+            } else {
+              wrong++;
+              wrongWords.push(word);
+              (btn as HTMLElement).classList.add('wrong-choice');
+              // highlight correct
+              quizBody.querySelectorAll('.voc-choice').forEach(c => {
+                if ((c as HTMLElement).dataset.val === correctVal) c.classList.add('correct-choice');
+              });
+              fb.innerHTML = `<div class="voc-feedback wrong-fb">✗ 正確答案已標示</div>`;
+            }
+            quizScore.textContent = `✓ ${correct}  ✗ ${wrong}`;
+            quizNext.style.display = 'inline-block';
+          });
+        });
+      }
+
+      function showResult() {
+        quizEl.style.display = 'none';
+        resultEl.style.display = 'block';
+        saveHistory(currentDay, correct, wrong);
+
+        const total = currentWords.length;
+        const pct = Math.round((correct / total) * 100);
+        let detailHTML = '';
+        if (wrongWords.length) {
+          detailHTML = `<div class="voc-result-detail">${wrongWords.map(w =>
+            `<div class="voc-result-word"><span class="wrong-word">${w.en}</span><span>${w.zh}</span></div>`
+          ).join('')}</div>`;
+        }
+
+        resultEl.innerHTML = `
+          <div class="voc-result-title">TOEIC VOC DAY ${currentDay}</div>
+          <div class="voc-result-score">${correct} / ${total}</div>
+          <div class="voc-result-pct">正確率 ${pct}%</div>
+          ${detailHTML}
+          <button class="voc-back-btn" id="voc-back">返回選單</button>
+        `;
+        (document.getElementById('voc-back') as HTMLButtonElement).addEventListener('click', backToDays);
+      }
+
+      function backToDays() {
+        quizEl.style.display = 'none';
+        resultEl.style.display = 'none';
+        dayListEl.style.display = '';
+        renderDayList();
+      }
+
+      quizNext.addEventListener('click', () => { qIndex++; renderQuestion(); });
+
+      // Auto-discover on card open
+      vocCard.addEventListener('toggle', () => {
+        if (vocCard.open && !allDays.length) discoverDays();
+      });
+    })();
+
+    /* ============================================================
+       Python Runner
+       ============================================================ */
+    (function () {
+      const pyCard = document.getElementById('py-card') as HTMLDetailsElement;
+      const runBtn = document.getElementById('py-run-btn') as HTMLButtonElement;
+      const editor = document.getElementById('py-editor') as HTMLTextAreaElement;
+      const output = document.getElementById('py-output') as HTMLPreElement;
+      const status = document.getElementById('py-status') as HTMLSpanElement;
+      const runText = document.getElementById('py-run-text') as HTMLSpanElement;
+
+      let pyodide: any = null;
+      let loading = false;
+      let loaded = false;
+
+      async function initPyodide() {
+        if (pyodide || loading) return;
+        loading = true;
+        status.textContent = '載入中…';
+        output.textContent = '正在下載 Python 執行環境（約 8MB），請稍候…';
+
+        try {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
+          document.head.appendChild(script);
+          await new Promise<void>((resolve, reject) => {
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load Pyodide script'));
+          });
+
+          // @ts-ignore
+          pyodide = await window.loadPyodide();
+          loaded = true;
+          status.textContent = '已就緒';
+          output.textContent = 'Python 環境已就緒，可以開始寫 code 了。';
+          runBtn.disabled = false;
+        } catch (e: any) {
+          status.textContent = '載入失敗';
+          output.textContent = 'Python 執行環境載入失敗：' + (e.message || e);
+        } finally {
+          loading = false;
+        }
+      }
+
+      async function runCode() {
+        if (!pyodide) return;
+        const code = editor.value.trim();
+        if (!code) return;
+
+        runBtn.disabled = true;
+        runText.textContent = '執行中…';
+        output.textContent = '';
+        output.classList.remove('has-error');
+        output.classList.add('running');
+        status.textContent = '執行中…';
+        await new Promise(r => setTimeout(r, 50));
+
+        try {
+          pyodide.runPython(`
 import sys
 from io import StringIO
 _stdout = sys.stdout
@@ -294,60 +712,59 @@ stderrCapture = StringIO()
 sys.stdout = StringIO()
 sys.stderr = stderrCapture
 `);
-
-        try {
-          pyodide.runPython(code);
+          try {
+            pyodide.runPython(code);
+          } catch (e: any) {
+            const errMsg = e.message || String(e);
+            const pythonError = errMsg.replace(/PythonError: Traceback.*?\n/, '').trim();
+            output.classList.remove('running');
+            output.classList.add('has-error');
+            output.textContent = pythonError || errMsg;
+            return;
+          }
+          const stdout = pyodide.runPython('sys.stdout.getvalue()');
+          const stderr = pyodide.runPython('stderrCapture.getvalue()');
+          pyodide.runPython('sys.stdout = _stdout');
+          let result = stdout;
+          if (stderr) result += '\n' + stderr;
+          output.classList.remove('running');
+          output.textContent = result || '（無輸出）';
+          status.textContent = '完成';
         } catch (e: any) {
-          const errMsg = e.message || String(e);
-          const pythonError = errMsg.replace(/PythonError: Traceback.*?\n/, '').trim();
           output.classList.remove('running');
           output.classList.add('has-error');
-          output.textContent = pythonError || errMsg;
-          return;
+          output.textContent = e.message || String(e);
+          status.textContent = '錯誤';
+        } finally {
+          runBtn.disabled = false;
+          runText.textContent = '執行';
         }
-
-        const stdout = pyodide.runPython('sys.stdout.getvalue()');
-        const stderr = pyodide.runPython('stderrCapture.getvalue()');
-        pyodide.runPython('sys.stdout = _stdout');
-
-        let result = stdout;
-        if (stderr) result += '\n' + stderr;
-
-        output.classList.remove('running');
-        output.textContent = result || '（無輸出）';
-        status.textContent = '完成';
-      } catch (e: any) {
-        output.classList.remove('running');
-        output.classList.add('has-error');
-        output.textContent = e.message || String(e);
-        status.textContent = '錯誤';
-      } finally {
-        runBtn.disabled = false;
-        runText.textContent = '執行';
       }
+
+      pyCard.addEventListener('toggle', () => {
+        if (pyCard.open && !loaded && !loading) initPyodide();
+      });
+      runBtn.addEventListener('click', runCode);
+      editor.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); if (!runBtn.disabled) runCode(); }
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const s = editor.selectionStart, end = editor.selectionEnd;
+          editor.value = editor.value.substring(0, s) + '    ' + editor.value.substring(end);
+          editor.selectionStart = editor.selectionEnd = s + 4;
+        }
+      });
+    })();
+
+    /* ============================================================
+       Utility
+       ============================================================ */
+    function shuffle<T>(arr: T[]): T[] {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
     }
-
-    // Load Pyodide only when card is opened
-    card.addEventListener('toggle', () => {
-      if (card.open && !loaded && !loading) {
-        initPyodide();
-      }
-    });
-
-    runBtn.addEventListener('click', runCode);
-
-    editor.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        if (!runBtn.disabled) runCode();
-      }
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = editor.selectionStart;
-        const end = editor.selectionEnd;
-        editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
-        editor.selectionStart = editor.selectionEnd = start + 4;
-      }
-    });
   </script>
 </BaseLayout>
