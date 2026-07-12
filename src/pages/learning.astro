@@ -8,7 +8,271 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <p style="color: var(--color-muted); margin-bottom: 2rem;">學習過程中的知識沉澱</p>
 
     <article>
-      <p style="color: var(--color-muted);">持續學習與記錄中。</p>
+      <h2>Python 線上練習場</h2>
+      <p style="color: var(--color-muted); margin-bottom: 1rem;">直接在瀏覽器裏跑 Python，不需要安裝任何東西。</p>
+
+      <div class="py-runner">
+        <div class="py-toolbar">
+          <span class="py-label">Python</span>
+          <button class="py-run-btn" id="py-run-btn" disabled>
+            <span class="py-run-icon">▶</span>
+            <span id="py-run-text">執行</span>
+          </button>
+        </div>
+        <textarea class="py-editor" id="py-editor" spellcheck="false" placeholder="在這裡寫 Python 程式碼...">print("Hello, World!")
+
+# 列表推導式
+squares = [x**2 for x in range(10)]
+print("平方數:", squares)
+
+# 簡單函式
+def fibonacci(n):
+    a, b = 0, 1
+    result = []
+    for _ in range(n):
+        result.append(a)
+        a, b = b, a + b
+    return result
+
+print("費波那契:", fibonacci(15))</textarea>
+        <div class="py-output-header">
+          <span class="py-label">輸出</span>
+          <span class="py-status" id="py-status">準備中…</span>
+        </div>
+        <pre class="py-output" id="py-output">載入 Python 執行環境中，請稍候…</pre>
+      </div>
+    </article>
+
+    <article>
+      <p style="color: var(--color-muted);">更多學習分享即將上線。</p>
     </article>
   </section>
+
+  <style>
+    .py-runner {
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .py-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.85rem;
+      background: var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .py-label {
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      letter-spacing: 0.03em;
+    }
+
+    .py-run-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.8rem;
+      background: var(--color-accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .py-run-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .py-run-btn:not(:disabled):hover {
+      opacity: 0.85;
+    }
+
+    .py-run-icon {
+      font-size: 0.65rem;
+    }
+
+    .py-editor {
+      width: 100%;
+      min-height: 220px;
+      padding: 1rem;
+      background: var(--color-bg);
+      color: var(--color-text);
+      border: none;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      resize: vertical;
+      outline: none;
+      tab-size: 4;
+    }
+
+    .py-editor::placeholder {
+      color: var(--color-muted);
+      opacity: 0.6;
+    }
+
+    .py-output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0.85rem;
+      background: var(--color-border);
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .py-status {
+      font-size: 0.7rem;
+      font-family: var(--font-heading);
+      color: var(--color-muted);
+    }
+
+    .py-output {
+      padding: 1rem;
+      min-height: 80px;
+      max-height: 300px;
+      overflow-y: auto;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin: 0;
+    }
+
+    .py-output.has-error {
+      color: var(--cctv-red, #a84848);
+    }
+
+    .py-output.running {
+      color: var(--color-muted);
+    }
+  </style>
+
+  <script>
+    const runBtn = document.getElementById('py-run-btn') as HTMLButtonElement;
+    const editor = document.getElementById('py-editor') as HTMLTextAreaElement;
+    const output = document.getElementById('py-output') as HTMLPreElement;
+    const status = document.getElementById('py-status') as HTMLSpanElement;
+    const runText = document.getElementById('py-run-text') as HTMLSpanElement;
+
+    let pyodide: any = null;
+    let loading = false;
+
+    async function loadPyodide() {
+      if (pyodide || loading) return;
+      loading = true;
+
+      try {
+        // @ts-ignore
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
+        document.head.appendChild(script);
+        await new Promise<void>((resolve, reject) => {
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error('Failed to load Pyodide'));
+        });
+
+        // @ts-ignore
+        pyodide = await loadPyodide();
+        status.textContent = '已就緒';
+        runBtn.disabled = false;
+      } catch (e) {
+        status.textContent = '載入失敗';
+        output.textContent = 'Python 執行環境載入失敗，請重新整理頁面。';
+      } finally {
+        loading = false;
+      }
+    }
+
+    async function runCode() {
+      if (!pyodide) return;
+
+      const code = editor.value.trim();
+      if (!code) return;
+
+      runBtn.disabled = true;
+      runText.textContent = '執行中…';
+      output.textContent = '';
+      output.classList.remove('has-error');
+      output.classList.add('running');
+      status.textContent = '執行中…';
+
+      await new Promise(r => setTimeout(r, 50));
+
+      try {
+        pyodide.runPython(`
+import sys
+from io import StringIO
+_stdout = sys.stdout
+stderrCapture = StringIO()
+sys.stdout = StringIO()
+sys.stderr = stderrCapture
+`);
+
+        try {
+          pyodide.runPython(code);
+        } catch (e: any) {
+          const errMsg = e.message || String(e);
+          // Try to extract just the Python traceback
+          const pythonError = errMsg.replace(/PythonError: Traceback.*?\n/, '').trim();
+          output.classList.remove('running');
+          output.classList.add('has-error');
+          output.textContent = pythonError || errMsg;
+          return;
+        }
+
+        const stdout = pyodide.runPython('sys.stdout.getvalue()');
+        const stderr = pyodide.runPython('stderrCapture.getvalue()');
+        pyodide.runPython('sys.stdout = _stdout');
+
+        let result = stdout;
+        if (stderr) result += '\n' + stderr;
+
+        output.classList.remove('running');
+        output.textContent = result || '（無輸出）';
+        status.textContent = '完成';
+      } catch (e: any) {
+        output.classList.remove('running');
+        output.classList.add('has-error');
+        output.textContent = e.message || String(e);
+        status.textContent = '錯誤';
+      } finally {
+        runBtn.disabled = false;
+        runText.textContent = '執行';
+      }
+    }
+
+    // Auto-load Pyodide on page load
+    loadPyodide();
+
+    runBtn.addEventListener('click', runCode);
+
+    // Ctrl+Enter / Cmd+Enter to run
+    editor.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (!runBtn.disabled) runCode();
+      }
+      // Tab to indent
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
+        editor.selectionStart = editor.selectionEnd = start + 4;
+      }
+    });
+  </script>
 </BaseLayout>
