@@ -170,27 +170,28 @@ print("費波那契:", fibonacci(15))</textarea>
     let pyodide: any = null;
     let loading = false;
 
-    async function loadPyodide() {
+    async function initPyodide() {
       if (pyodide || loading) return;
       loading = true;
+      status.textContent = '載入中…';
 
       try {
-        // @ts-ignore
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
         document.head.appendChild(script);
         await new Promise<void>((resolve, reject) => {
           script.onload = () => resolve();
-          script.onerror = () => reject(new Error('Failed to load Pyodide'));
+          script.onerror = () => reject(new Error('Failed to load Pyodide script'));
         });
 
-        // @ts-ignore
-        pyodide = await loadPyodide();
+        // @ts-ignore — loadPyodide is a global from pyodide.js
+        pyodide = await window.loadPyodide();
         status.textContent = '已就緒';
+        output.textContent = 'Python 環境已就緒，可以開始寫 code 了。';
         runBtn.disabled = false;
-      } catch (e) {
+      } catch (e: any) {
         status.textContent = '載入失敗';
-        output.textContent = 'Python 執行環境載入失敗，請重新整理頁面。';
+        output.textContent = 'Python 執行環境載入失敗：' + (e.message || e);
       } finally {
         loading = false;
       }
@@ -255,7 +256,7 @@ sys.stderr = stderrCapture
     }
 
     // Auto-load Pyodide on page load
-    loadPyodide();
+    initPyodide();
 
     runBtn.addEventListener('click', runCode);
 
