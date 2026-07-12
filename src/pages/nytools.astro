@@ -84,6 +84,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .tool-card:nth-child(2) { animation-delay: 0.2s; }
   .tool-card:nth-child(3) { animation-delay: 0.3s; }
   .tool-card:nth-child(4) { animation-delay: 0.4s; }
+  .tool-card:nth-child(5) { animation-delay: 0.5s; }
 
   .tool-card:hover {
     transform: translateY(-4px) scale(1.02);
@@ -205,6 +206,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <h3>NY Screen</h3>
         <p>投影神器。免安裝、免登入、免配對碼，開網頁就能投影。支援全螢幕顯示，使用 PeerJS + STUN/TURN 跨網段連線。</p>
         <span class="tag">Screen Share</span>
+      </a>
+
+      <a href="/Diary/nytools/clock" class="tool-card">
+        <div class="icon">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </div>
+        <h3>FocusClock</h3>
+        <p>精美計時器工具。支援多組計時器同時運行、環形進度條、自訂鈴聲、暫停/繼續，介面仿 macOS 風格，純前端運行。</p>
+        <span class="tag">Timer</span>
       </a>
     </div>
   </section>
