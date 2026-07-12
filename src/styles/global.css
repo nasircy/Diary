@@ -25,6 +25,10 @@ body.dark {
   --color-border: #333333;
 }
 
+body.dark img {
+  opacity: 0.9;
+}
+
 html {
   font-size: 16px;
   scroll-behavior: smooth;

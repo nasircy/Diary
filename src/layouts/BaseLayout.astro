@@ -42,8 +42,11 @@ const base = '/Diary';
         <li><a href="https://nasirlin.net" target="_blank" rel="noopener">個人網頁</a></li>
       </ul>
       <button class="theme-toggle" id="themeToggle" aria-label="切換深色模式">
-        <span class="icon-sun">☀️</span>
-        <span class="icon-moon">🌙</span>
+        <span class="toggle-track">
+          <span class="toggle-thumb"></span>
+          <span class="icon-sun">☀️</span>
+          <span class="icon-moon">🌙</span>
+        </span>
       </button>
     </nav>
   </header>
@@ -57,24 +60,52 @@ const base = '/Diary';
   </footer>
 
   <style>
-    /* Theme Toggle */
+    /* Theme Toggle - Capsule Style */
     .theme-toggle {
-      background: transparent;
+      background: var(--color-bg);
       border: 1px solid var(--color-border);
-      border-radius: 8px;
-      width: 36px;
-      height: 36px;
+      border-radius: 20px;
+      padding: 4px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: all 0.3s ease;
       flex-shrink: 0;
+      transition: all 0.3s ease;
     }
 
     .theme-toggle:hover {
       border-color: var(--color-accent);
+    }
+
+    .toggle-track {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      position: relative;
+      width: 52px;
+      height: 24px;
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      z-index: 1;
+    }
+
+    body.dark .toggle-thumb {
+      transform: translateX(28px);
+    }
+
+    .toggle-track span:not(.toggle-thumb) {
+      font-size: 0.75rem;
+      z-index: 0;
+      width: 24px;
+      text-align: center;
     }
 
     .icon-moon { display: none; }

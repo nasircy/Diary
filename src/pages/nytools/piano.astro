@@ -51,7 +51,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
 
   .features {
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 1.5rem;
@@ -94,7 +94,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
 
   .how-to-use {
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 1.5rem;
@@ -142,7 +142,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   .mode-btn {
     flex: 1;
     padding: 1.25rem;
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     cursor: pointer;
@@ -179,7 +179,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   .status-bar {
     padding: 0.75rem 1rem;
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 8px;
     margin-bottom: 1rem;
@@ -202,7 +202,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
 
   .request-form {
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 2rem;
@@ -255,7 +255,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
 
   .admin-queue {
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 1.5rem;
@@ -272,7 +272,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   .queue-empty {
     text-align: center;
     padding: 2rem;
-    color: #ccc;
+    color: var(--color-muted);
     font-size: 0.9rem;
   }
 
@@ -331,7 +331,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   <div class="page-header">
     <h1>NYPIANO</h1>
-    <p>即時點播小工具 — 聽眾點歌、演奏者即時接收</p>
+    <p>即時點播小工具 — 聽眾點歌，演奏者即時收到</p>
+  </div>
+
+  <div class="features">
+    <h3>專案背景</h3>
+    <p style="color: var(--color-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">由於時常在北商大體育館2樓進行練琴，這是一個讓路過的人可以隨時點歌的互動系統！原本依靠 Redis Queue 排隊，現在全面改為透過 PeerJS P2P 連線。管理員 (Admin) 本身就是一個動態主機，所有的聽眾點對點連線到管理員。</p>
   </div>
 
   <div class="features">

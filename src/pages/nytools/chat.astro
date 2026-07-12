@@ -40,7 +40,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
 
   .features {
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 1.5rem;
@@ -83,7 +83,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
 
   .how-to-use {
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 1.5rem;
@@ -131,7 +131,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   .mode-btn {
     flex: 1;
     padding: 1.25rem;
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     cursor: pointer;
@@ -173,7 +173,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   .status-bar {
     padding: 0.75rem 1rem;
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 8px;
     margin-bottom: 1rem;
@@ -196,7 +196,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
 
   .messages {
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 1rem;
@@ -286,7 +286,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     animation: fadeIn 0.4s ease-out;
     text-align: center;
     padding: 2rem;
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 10px;
   }
@@ -343,6 +343,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <div class="page-header">
     <h1>NY CHAT</h1>
     <p>P2P 分散式客服排隊系統 — 即時加密對話，無需伺服器</p>
+  </div>
+
+  <div class="features">
+    <h3>專案背景</h3>
+    <p style="color: var(--color-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">本專案為國立臺北商業大學 (NTUB) 資料庫課程小專題。原本系統依賴 Node.js、Python、Redis 等後端架構。為了打造更輕量化，不要牛刀來割雞，所以目前已經全面進化為 Serverless (無伺服器) 架構，完全透過 WebRTC 與 PeerJS 實現所有功能！直接節省了很多後端伺服器資源，只需要連結目前的 GitHub Pages 就可以運行。</p>
   </div>
 
   <div class="features">
