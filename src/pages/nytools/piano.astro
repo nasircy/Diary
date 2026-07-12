@@ -1,0 +1,409 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .page-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+
+  .mode-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.1s both;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+
+  .mode-btn:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  .mode-btn h3 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    margin: 0 0 0.3rem 0;
+  }
+
+  .mode-btn p {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  .piano-area {
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .piano-area.visible {
+    display: block;
+  }
+
+  .status-bar {
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+
+  .status-dot.connected {
+    background: var(--color-accent);
+  }
+
+  .request-form {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .request-form p {
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .request-form .input-row {
+    display: flex;
+    gap: 0.5rem;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .request-form input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .request-form input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .request-form button {
+    padding: 0.75rem 1.5rem;
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .request-form button:hover {
+    opacity: 0.85;
+  }
+
+  .admin-queue {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    min-height: 200px;
+  }
+
+  .admin-queue h3 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    margin: 0 0 1rem 0;
+    color: var(--color-muted);
+  }
+
+  .queue-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #ccc;
+    font-size: 0.9rem;
+  }
+
+  .queue-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .queue-item .song {
+    font-weight: 600;
+  }
+
+  .queue-item .time {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+  }
+
+  .queue-item button {
+    padding: 0.4rem 0.8rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--color-muted);
+    transition: all 0.2s;
+  }
+
+  .queue-item button:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .sent-notice {
+    text-align: center;
+    padding: 1rem;
+    color: var(--color-accent);
+    font-size: 0.9rem;
+    display: none;
+  }
+</style>
+
+<BaseLayout title="NYPIANO">
+  <a href="/Diary/nytools" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+    返回 NYTools
+  </a>
+
+  <div class="page-header">
+    <h1>NYPIANO</h1>
+    <p>即時點播小工具 — 聽眾點歌、演奏者即時接收</p>
+  </div>
+
+  <div id="modeSelect" class="mode-selector">
+    <button class="mode-btn" data-mode="listener">
+      <h3>聽眾</h3>
+      <p>點播你想聽的歌</p>
+    </button>
+    <button class="mode-btn" data-mode="admin">
+      <h3>演奏者</h3>
+      <p>查看點歌清單</p>
+    </button>
+  </div>
+
+  <div id="pianoArea" class="piano-area">
+    <div class="status-bar">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">未連線</span>
+    </div>
+
+    <div id="listenerView" style="display:none;">
+      <div class="request-form">
+        <p>輸入你想聽的歌名</p>
+        <div class="input-row">
+          <input type="text" id="songInput" placeholder="歌名..." />
+          <button id="sendRequest">點播</button>
+        </div>
+      </div>
+      <div id="sentNotice" class="sent-notice">已送出點播！</div>
+    </div>
+
+    <div id="adminView" style="display:none;">
+      <div class="admin-queue">
+        <h3>點歌清單</h3>
+        <div id="queueList">
+          <div class="queue-empty">等待聽眾點歌中...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline src="https://unpkg.com/peerjs/dist/peerjs.min.js"></script>
+<script is:inline>
+(function() {
+  var peer = null;
+  var conn = null;
+  var role = null;
+
+  var modeSelect = document.getElementById('modeSelect');
+  var pianoArea = document.getElementById('pianoArea');
+  var statusDot = document.getElementById('statusDot');
+  var statusText = document.getElementById('statusText');
+  var listenerView = document.getElementById('listenerView');
+  var adminView = document.getElementById('adminView');
+  var queueList = document.getElementById('queueList');
+
+  function setStatus(connected, text) {
+    statusDot.className = 'status-dot' + (connected ? ' connected' : '');
+    statusText.textContent = text;
+  }
+
+  function now() {
+    return new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  document.querySelectorAll('.mode-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      role = this.dataset.mode;
+      modeSelect.style.display = 'none';
+      pianoArea.classList.add('visible');
+
+      if (role === 'listener') {
+        listenerView.style.display = 'block';
+        startListener();
+      } else {
+        adminView.style.display = 'block';
+        startAdmin();
+      }
+    });
+  });
+
+  function startListener() {
+    peer = new Peer('nypiano_' + Math.random().toString(36).substr(2, 8));
+
+    peer.on('open', function() {
+      conn = peer.connect('nypiano_admin', { reliable: true });
+      conn.on('open', function() {
+        setStatus(true, '已連線至演奏者');
+      });
+      conn.on('close', function() {
+        setStatus(false, '演奏者已離線');
+      });
+      conn.on('error', function() {
+        setStatus(false, '連線失敗');
+      });
+    });
+  }
+
+  document.getElementById('sendRequest').addEventListener('click', function() {
+    var song = document.getElementById('songInput').value.trim();
+    if (!song || !conn || !conn.open) return;
+
+    conn.send({ type: 'request', song: song, time: now() });
+    document.getElementById('songInput').value = '';
+    var notice = document.getElementById('sentNotice');
+    notice.style.display = 'block';
+    setTimeout(function() {
+      notice.style.display = 'none';
+    }, 2000);
+  });
+
+  document.getElementById('songInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      document.getElementById('sendRequest').click();
+    }
+  });
+
+  function startAdmin() {
+    peer = new Peer('nypiano_admin');
+
+    peer.on('connection', function(c) {
+      conn = c;
+      setStatus(true, '聽眾已連線');
+
+      conn.on('data', function(data) {
+        if (data.type === 'request') {
+          addRequest(data.song, data.time);
+        }
+      });
+
+      conn.on('close', function() {
+        setStatus(false, '聽眾已離線');
+      });
+    });
+  }
+
+  function addRequest(song, time) {
+    var empty = queueList.querySelector('.queue-empty');
+    if (empty) empty.remove();
+
+    var item = document.createElement('div');
+    item.className = 'queue-item';
+    item.innerHTML =
+      '<div><div class="song">' + song + '</div><div class="time">' + time + '</div></div>' +
+      '<button>完成</button>';
+
+    item.querySelector('button').addEventListener('click', function() {
+      item.remove();
+      if (queueList.children.length === 0) {
+        queueList.innerHTML = '<div class="queue-empty">等待聽眾點歌中...</div>';
+      }
+    });
+
+    queueList.appendChild(item);
+  }
+})();
+</script>
