@@ -272,68 +272,80 @@ const base = '/Diary';
   </style>
 
   <script>
-    // Theme toggle
+    // Theme initialization
     function initTheme() {
       const saved = localStorage.getItem('theme');
       if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.body.classList.add('dark');
+      } else {
+        document.body.classList.remove('dark');
       }
     }
 
-    initTheme();
-
-    document.getElementById('themeToggle')?.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-    });
-
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const navLinks = document.getElementById('navLinks');
-    hamburgerBtn?.addEventListener('click', () => {
-      hamburgerBtn.classList.toggle('open');
-      navLinks?.classList.toggle('open');
-    });
-
-    navLinks?.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        hamburgerBtn?.classList.remove('open');
-        navLinks?.classList.remove('open');
-      });
-    });
-
     // Page transition overlay
-    const overlay = document.getElementById('pageTransition');
+    let safetyTimeout: number | undefined;
+
+    function getOverlay() {
+      return document.getElementById('pageTransition');
+    }
 
     function showOverlay() {
-      overlay?.classList.remove('hidden');
+      const overlay = getOverlay();
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        
+        // Safety failsafe: automatically hide overlay after 4 seconds
+        // in case navigation is aborted or fails
+        clearTimeout(safetyTimeout);
+        safetyTimeout = window.setTimeout(() => {
+          hideOverlay();
+        }, 4000);
+      }
     }
 
     function hideOverlay() {
-      setTimeout(() => {
-        overlay?.classList.add('hidden');
-      }, 800);
+      const overlay = getOverlay();
+      if (overlay) {
+        clearTimeout(safetyTimeout);
+        overlay.classList.add('hidden');
+      }
     }
 
-    // Initial page load
-    hideOverlay();
+    // Bind all event listeners and run initial state (runs on initial load AND after every transition)
+    document.addEventListener('astro:page-load', () => {
+      // 1. Initialize Theme
+      initTheme();
 
-    // Intercept nav links for transition
-    document.querySelectorAll('nav a[href]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const href = (e.currentTarget as HTMLAnchorElement).getAttribute('href');
-        if (!href || href.startsWith('http')) return;
-        e.preventDefault();
-        showOverlay();
-        setTimeout(() => {
-          window.location.href = href;
-        }, 400);
+      // 2. Hide overlay (once page is loaded)
+      hideOverlay();
+
+      // 3. Bind Theme Toggle Click Event
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle?.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+      });
+
+      // 4. Bind Hamburger Menu Event
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const navLinks = document.getElementById('navLinks');
+      
+      hamburgerBtn?.addEventListener('click', () => {
+        hamburgerBtn.classList.toggle('open');
+        navLinks?.classList.toggle('open');
+      });
+
+      navLinks?.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          hamburgerBtn?.classList.remove('open');
+          navLinks?.classList.remove('open');
+        });
       });
     });
 
-    // Re-apply theme after ViewTransitions swap
-    document.addEventListener('astro:after-swap', () => {
-      initTheme();
-      hideOverlay();
+    // Show overlay when client-side navigation starts
+    document.addEventListener('astro:before-preparation', () => {
+      showOverlay();
     });
   </script>
 </body>
