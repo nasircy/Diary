@@ -1,0 +1,534 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .page-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+
+  .mode-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.1s both;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+
+  .mode-btn:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  .mode-btn h3 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    margin: 0 0 0.3rem 0;
+  }
+
+  .mode-btn p {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  .screen-area {
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .screen-area.visible {
+    display: block;
+  }
+
+  .status-bar {
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+
+  .status-dot.connected {
+    background: var(--color-accent);
+  }
+
+  .room-setup {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .room-setup p {
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .room-setup .code {
+    font-family: monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.2em;
+    user-select: all;
+    margin-bottom: 1rem;
+  }
+
+  .room-setup .copy-btn {
+    padding: 0.5rem 1.5rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: var(--color-muted);
+    transition: all 0.2s;
+  }
+
+  .room-setup .copy-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .room-join {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .room-join p {
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .room-join input {
+    width: 200px;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 0.15em;
+    outline: none;
+  }
+
+  .room-join input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .room-join button {
+    display: block;
+    margin: 1rem auto 0;
+    padding: 0.75rem 2rem;
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .room-join button:hover {
+    opacity: 0.85;
+  }
+
+  .video-container {
+    position: relative;
+    background: #111;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    min-height: 300px;
+    display: none;
+  }
+
+  .video-container.visible {
+    display: block;
+  }
+
+  .video-container video {
+    width: 100%;
+    display: block;
+  }
+
+  .video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    font-size: 1.1rem;
+  }
+
+  .video-overlay.hidden {
+    display: none;
+  }
+
+  .controls {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .controls button {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .controls button:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .controls button.active {
+    background: var(--color-accent);
+    color: white;
+    border-color: var(--color-accent);
+  }
+
+  .waiting {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+
+  .waiting .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+<BaseLayout title="NY Screen">
+  <a href="/Diary/nytools" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+    返回 NYTools
+  </a>
+
+  <div class="page-header">
+    <h1>NY Screen</h1>
+    <p>投影神器 — 免安裝免登入，開網頁即用</p>
+  </div>
+
+  <div id="modeSelect" class="mode-selector">
+    <button class="mode-btn" data-mode="receiver">
+      <h3>接收端</h3>
+      <p>開設房間，等待投影</p>
+    </button>
+    <button class="mode-btn" data-mode="sender">
+      <h3>發送端</h3>
+      <p>連線房間，開始投影</p>
+    </button>
+  </div>
+
+  <div id="screenArea" class="screen-area">
+    <div class="status-bar">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">未連線</span>
+    </div>
+
+    <div id="receiverSetup" class="room-setup" style="display:none;">
+      <p>將此代碼分享給發送端</p>
+      <div class="code" id="roomCode"></div>
+      <button class="copy-btn" id="copyCode">複製連結</button>
+    </div>
+
+    <div id="senderSetup" class="room-join" style="display:none;">
+      <p>輸入接收端提供的房間代碼</p>
+      <input type="text" id="codeField" maxlength="6" placeholder="000000" />
+      <button id="joinRoom">連線房間</button>
+    </div>
+
+    <div id="receiverView" class="waiting" style="display:none;">
+      <div class="spinner"></div>
+      <p>等待發送端連線...</p>
+    </div>
+
+    <div id="senderView" style="display:none;">
+      <div class="controls">
+        <button id="startShare">開始投影</button>
+        <button id="stopShare" style="display:none;">停止投影</button>
+        <button id="fullscreenBtn">全螢幕</button>
+      </div>
+    </div>
+
+    <div id="videoContainer" class="video-container">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="video-overlay" id="videoOverlay">等待畫面...</div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline src="https://unpkg.com/peerjs/dist/peerjs.min.js"></script>
+<script is:inline>
+(function() {
+  var peer = null;
+  var conn = null;
+  var role = null;
+  var roomCode = '';
+  var localStream = null;
+
+  var modeSelect = document.getElementById('modeSelect');
+  var screenArea = document.getElementById('screenArea');
+  var statusDot = document.getElementById('statusDot');
+  var statusText = document.getElementById('statusText');
+  var receiverSetup = document.getElementById('receiverSetup');
+  var senderSetup = document.getElementById('senderSetup');
+  var receiverView = document.getElementById('receiverView');
+  var senderView = document.getElementById('senderView');
+  var videoContainer = document.getElementById('videoContainer');
+  var remoteVideo = document.getElementById('remoteVideo');
+  var videoOverlay = document.getElementById('videoOverlay');
+
+  function genCode() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
+
+  function setStatus(connected, text) {
+    statusDot.className = 'status-dot' + (connected ? ' connected' : '');
+    statusText.textContent = text;
+  }
+
+  document.querySelectorAll('.mode-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      role = this.dataset.mode;
+      modeSelect.style.display = 'none';
+      screenArea.classList.add('visible');
+
+      if (role === 'receiver') {
+        roomCode = genCode();
+        document.getElementById('roomCode').textContent = roomCode;
+        receiverSetup.style.display = 'block';
+        startReceiver();
+      } else {
+        senderSetup.style.display = 'block';
+      }
+    });
+  });
+
+  document.getElementById('copyCode').addEventListener('click', function() {
+    var url = window.location.origin + '/Diary/nytools/screen?room=' + roomCode;
+    navigator.clipboard.writeText(url);
+    this.textContent = '已複製連結！';
+    setTimeout(function() {
+      document.getElementById('copyCode').textContent = '複製連結';
+    }, 1500);
+  });
+
+  document.getElementById('joinRoom').addEventListener('click', function() {
+    var code = document.getElementById('codeField').value.trim();
+    if (code.length !== 6) return;
+    roomCode = code;
+    startSender();
+  });
+
+  function startReceiver() {
+    peer = new Peer('nyscreen_recv_' + roomCode);
+
+    peer.on('connection', function(c) {
+      conn = c;
+      setStatus(true, '發送端已連線');
+      receiverSetup.style.display = 'none';
+      receiverView.style.display = 'none';
+      videoContainer.classList.add('visible');
+
+      conn.on('data', function(data) {
+        if (data.type === 'signal') {
+          handleSignal(data);
+        }
+      });
+
+      conn.on('close', function() {
+        setStatus(false, '發送端已斷線');
+        videoOverlay.classList.remove('hidden');
+        videoOverlay.textContent = '發送端已離開';
+      });
+    });
+  }
+
+  function startSender() {
+    peer = new Peer('nyscreen_send_' + Math.random().toString(36).substr(2, 8));
+
+    peer.on('open', function() {
+      conn = peer.connect('nyscreen_recv_' + roomCode, { reliable: true });
+
+      conn.on('open', function() {
+        setStatus(true, '已連線至接收端');
+        senderSetup.style.display = 'none';
+        senderView.style.display = 'block';
+        videoContainer.classList.add('visible');
+      });
+
+      conn.on('close', function() {
+        setStatus(false, '接收端已斷線');
+      });
+    });
+  }
+
+  document.getElementById('startShare').addEventListener('click', async function() {
+    try {
+      localStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      document.getElementById('startShare').style.display = 'none';
+      document.getElementById('stopShare').style.display = 'inline-flex';
+      videoOverlay.classList.add('hidden');
+
+      localStream.getVideoTracks()[0].onended = function() {
+        stopSharing();
+      };
+
+      if (conn && conn.peerConnection) {
+        var senders = conn.peerConnection.getSenders();
+        localStream.getTracks().forEach(function(track) {
+          var sender = senders.find(function(s) { return s.track && s.track.kind === track.kind; });
+          if (sender) {
+            sender.replaceTrack(track);
+          } else {
+            conn.peerConnection.addTrack(track, localStream);
+          }
+        });
+      }
+
+      var pc = conn.peerConnection;
+      var offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      conn.send({ type: 'signal', sdp: pc.localDescription });
+    } catch(e) {
+      setStatus(false, '螢幕分享被拒絕');
+    }
+  });
+
+  document.getElementById('stopShare').addEventListener('click', stopSharing);
+
+  function stopSharing() {
+    if (localStream) {
+      localStream.getTracks().forEach(function(t) { t.stop(); });
+      localStream = null;
+    }
+    document.getElementById('startShare').style.display = 'inline-flex';
+    document.getElementById('stopShare').style.display = 'none';
+    videoOverlay.classList.remove('hidden');
+    videoOverlay.textContent = '投影已停止';
+  }
+
+  document.getElementById('fullscreenBtn').addEventListener('click', function() {
+    if (remoteVideo.requestFullscreen) {
+      remoteVideo.requestFullscreen();
+    }
+  });
+
+  async function handleSignal(data) {
+    if (!data.sdp) return;
+    var pc = conn.peerConnection;
+
+    if (data.sdp.type === 'offer') {
+      await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+      var answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      conn.send({ type: 'signal', sdp: pc.localDescription });
+    } else if (data.sdp.type === 'answer') {
+      await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+    }
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var joinRoom = params.get('room');
+  if (joinRoom) {
+    document.getElementById('codeField').value = joinRoom;
+    modeSelect.querySelector('[data-mode="sender"]').click();
+    setTimeout(function() {
+      document.getElementById('joinRoom').click();
+    }, 500);
+  }
+})();
+</script>
