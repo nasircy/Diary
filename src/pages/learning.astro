@@ -29,22 +29,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                 <span id="py-run-text">執行</span>
               </button>
             </div>
-            <textarea class="py-editor" id="py-editor" spellcheck="false" placeholder="在這裡寫 Python 程式碼...">print("Hello, World!")
-
-# 列表推導式
-squares = [x**2 for x in range(10)]
-print("平方數:", squares)
-
-# 簡單函式
-def fibonacci(n):
-    a, b = 0, 1
-    result = []
-    for _ in range(n):
-        result.append(a)
-        a, b = b, a + b
-    return result
-
-print("費波那契:", fibonacci(15))</textarea>
+            <textarea class="py-editor" id="py-editor" spellcheck="false" placeholder="在這裡寫 Python 程式碼..."></textarea>
             <div class="py-output-header">
               <span class="py-label">輸出</span>
               <span class="py-status" id="py-status">點擊展開後載入…</span>
