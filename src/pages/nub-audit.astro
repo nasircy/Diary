@@ -40,18 +40,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <li>找到剛才下載的 NTUB_Audit.bat 檔案。</li>
         <li>在檔案上點擊 <strong>滑鼠右鍵</strong> ➔ 選擇 <strong>「以系統管理員身分執行」</strong> (Run as administrator)。</li>
       </ul>
+      <p><img src={`/Diary/images/nub-audit/1.png`} alt="以系統管理員身分執行" style="max-width:100%; border-radius:8px; border:1px solid var(--color-border);"></p>
 
       <h3>步驟三：按下【是】後，不要動讓他跑！</h3>
       <ul>
         <li>程式啟動後，將全自動執行初檢！</li>
         <li>過程中若偵測到未更新的軟體，會透過 winget 於背景下載並靜默安裝，請耐心等待其完成。</li>
       </ul>
+      <p><img src={`/Diary/images/nub-audit/2.png`} alt="執行中畫面" style="max-width:100%; border-radius:8px; border:1px solid var(--color-border);"></p>
 
       <h3>步驟四：執行完畢與確認</h3>
       <ul>
         <li>腳本全自動跑完後，畫面最後會停留在：<code>所有資安強制防護與盤點任務已執行完畢！</code></li>
         <li>此時請檢視視窗中是否有任何紅色/黃色警告，並按鍵盤上的 <strong>任意鍵</strong> 即可安全結束視窗。</li>
       </ul>
+      <p><img src={`/Diary/images/nub-audit/3.png`} alt="執行完畢畫面" style="max-width:100%; border-radius:8px; border:1px solid var(--color-border);"></p>
     </article>
 
     <article>
@@ -60,8 +63,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p style="color: var(--color-muted); font-style: italic;">建議：由於很多軟體都一直在不定時更新，系統也是，建議在正式稽核的前幾天，將此程式重新開啟執行一次，確保所有的安全性或是應用程式都是在最新狀態。</p>
     </article>
 
-    <article>
-      <p><a href="https://github.com/nasircy/ntub2026ITAudit" target="_blank" rel="noopener">👉 前往 GitHub 查看原始 Repo</a></p>
-    </article>
+
   </section>
 </BaseLayout>
