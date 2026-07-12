@@ -502,7 +502,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   .control-btn.pause {
     background: var(--color-accent);
-    color: white;
+    color: var(--color-bg);
   }
 </style>
 
@@ -576,8 +576,32 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const circumference = radius * 2 * Math.PI;
   ringProgress.style.strokeDasharray = `${circumference} ${circumference}`;
 
-  let activeTimers: any[] = [];
+  /*
+   * Timer uses Date.now() absolute timestamps instead of decrement counting.
+   * This ensures accurate timing even when browser throttles setInterval in
+   * background tabs. remaining is always recalculated from (endTime - now).
+   */
+  interface Timer {
+    id: number;
+    total: number;
+    endTime: number;
+    pauseOffset: number;
+    isRunning: boolean;
+    isFinished: boolean;
+    expectedEnd: string;
+    label: string;
+    sound: string;
+    ringInterval: ReturnType<typeof setInterval> | null;
+  }
+
+  let activeTimers: Timer[] = [];
   let focusedTimerId: number | null = null;
+
+  function getRemaining(t: Timer): number {
+    if (t.isFinished) return 0;
+    if (!t.isRunning) return t.pauseOffset;
+    return Math.max(0, Math.ceil((t.endTime - Date.now()) / 1000));
+  }
 
   function switchView(viewId: string) {
     Object.values(views).forEach(v => v.classList.remove('active'));
@@ -603,28 +627,44 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   }
 
-  function calcEndTime(remainingSeconds: number) {
+  function calcEndTimeStr(remainingSeconds: number) {
     const now = new Date();
     now.setSeconds(now.getSeconds() + remainingSeconds);
     let h = now.getHours(), m = now.getMinutes();
     const ampm = h >= 12 ? 'PM' : 'AM';
     h = h % 12; h = h ? h : 12;
-    m = m < 10 ? 0 + m : m;
-    return `${h}:${m} ${ampm}`;
+    return `${h}:${m < 10 ? '0' + m : m} ${ampm}`;
+  }
+
+  function startRinging(t: Timer) {
+    if (t.ringInterval) return;
+    playSound(t.sound);
+    t.ringInterval = setInterval(() => playSound(t.sound), 3000);
+    if (document.hidden) {
+      document.title = `\u{1F514} ${t.label || 'Timer'} — 時間到了！`;
+    }
+  }
+
+  function stopRinging(t: Timer) {
+    if (t.ringInterval) {
+      clearInterval(t.ringInterval);
+      t.ringInterval = null;
+    }
   }
 
   function tickAll() {
     let needsRender = false;
     activeTimers.forEach(t => {
-      if (t.isRunning && t.remaining > 0) {
-        t.remaining--;
+      if (t.isRunning && !t.isFinished) {
+        const remaining = getRemaining(t);
         needsRender = true;
-        if (t.remaining <= 0) {
+        if (remaining <= 0) {
           t.isRunning = false;
           t.isFinished = true;
-          playSound(t.sound);
+          t.pauseOffset = 0;
+          startRinging(t);
         } else {
-          t.expectedEnd = calcEndTime(t.remaining);
+          t.expectedEnd = calcEndTimeStr(remaining);
         }
       }
     });
@@ -646,7 +686,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
     emptyAlarms.style.display = 'none';
     activeTimers.forEach(t => {
-      const pct = t.total > 0 ? t.remaining / t.total : 0;
+      const remaining = getRemaining(t);
+      const pct = t.total > 0 ? remaining / t.total : 0;
       const dashCircum = 2 * Math.PI * 35;
       const offset = dashCircum - pct * dashCircum;
       const card = document.createElement('div');
@@ -657,7 +698,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <circle class="dash-bg" stroke-width="6" fill="transparent" r="35" cx="40" cy="40"/>
             <circle class="dash-progress" stroke-width="6" fill="transparent" r="35" cx="40" cy="40" style="stroke-dasharray: ${dashCircum}; stroke-dashoffset: ${offset};"/>
           </svg>
-          <div class="dash-time">${t.isFinished ? '00:00' : formatTime(t.remaining)}</div>
+          <div class="dash-time">${t.isFinished ? '00:00' : formatTime(remaining)}</div>
         </div>
         <div class="dash-label">${t.label || 'Timer'}</div>
         <div class="dash-end">${t.isFinished ? 'Ringing!' : (t.isRunning ? t.expectedEnd : 'Paused')}</div>
@@ -673,7 +714,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   function updateFocusUI() {
     const t = activeTimers.find(x => x.id === focusedTimerId);
     if (!t) return switchView('alarms-view');
-    focusTimeDisplay.textContent = t.isFinished ? '00:00' : formatTime(t.remaining);
+    const remaining = getRemaining(t);
+    focusTimeDisplay.textContent = t.isFinished ? '00:00' : formatTime(remaining);
     focusLabel.textContent = t.label || 'Timer';
     focusSoundSelect.value = t.sound;
     if (t.isFinished) {
@@ -684,7 +726,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       pauseBtn.textContent = t.isRunning ? 'Pause' : 'Resume';
       endTimeDisplay.textContent = t.isRunning ? t.expectedEnd : 'Paused';
     }
-    const pct = t.total > 0 ? t.remaining / t.total : 0;
+    const pct = t.total > 0 ? remaining / t.total : 0;
     ringProgress.style.strokeDashoffset = String(circumference - pct * circumference);
   }
 
@@ -694,16 +736,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const s = parseInt(inputS.value) || 0;
     const total = h * 3600 + m * 60 + s;
     if (total <= 0) return;
-    const newTimer = {
+    const newTimer: Timer = {
       id: Date.now(),
-      total, remaining: total,
-      isRunning: true, isFinished: false,
-      expectedEnd: calcEndTime(total),
+      total,
+      endTime: Date.now() + total * 1000,
+      pauseOffset: total,
+      isRunning: true,
+      isFinished: false,
+      expectedEnd: calcEndTimeStr(total),
       label: setupLabel.value,
-      sound: setupSound.value
+      sound: setupSound.value,
+      ringInterval: null
     };
     activeTimers.push(newTimer);
     inputH.value = ''; inputM.value = ''; inputS.value = '';
+    setupLabel.value = '';
     focusedTimerId = newTimer.id;
     switchView('focus-view');
   });
@@ -711,21 +758,31 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   pauseBtn.addEventListener('click', () => {
     const t = activeTimers.find(x => x.id === focusedTimerId);
     if (!t) return;
-    t.isRunning = !t.isRunning;
-    if (t.isRunning) t.expectedEnd = calcEndTime(t.remaining);
+    if (t.isFinished) return;
+    if (t.isRunning) {
+      t.pauseOffset = getRemaining(t);
+      t.isRunning = false;
+    } else {
+      t.endTime = Date.now() + t.pauseOffset * 1000;
+      t.isRunning = true;
+    }
     updateFocusUI();
   });
 
   cancelBtn.addEventListener('click', () => {
     const idx = activeTimers.findIndex(x => x.id === focusedTimerId);
     if (idx > -1) {
-      if (activeTimers[idx].isFinished) {
-        playSound('gentle');
-      }
+      stopRinging(activeTimers[idx]);
       activeTimers.splice(idx, 1);
     }
     focusedTimerId = null;
+    document.title = 'FocusClock';
     switchView('alarms-view');
+  });
+
+  focusSoundSelect.addEventListener('change', () => {
+    const t = activeTimers.find(x => x.id === focusedTimerId);
+    if (t) t.sound = focusSoundSelect.value;
   });
 
   [inputH, inputM, inputS].forEach(inp => inp.addEventListener('blur', () => {
