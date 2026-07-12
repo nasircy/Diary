@@ -8,18 +8,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <p style="color: var(--color-muted); margin-bottom: 2rem;">學習過程中的知識沉澱</p>
 
     <article>
-      <h2>Python 線上練習</h2>
-      <p style="color: var(--color-muted); margin-bottom: 1rem;">直接在瀏覽器裏跑 Python。</p>
+      <details class="py-card" id="py-card">
+        <summary class="py-card-summary">
+          <div class="py-card-left">
+            <span class="py-card-icon">🐍</span>
+            <div>
+              <h3 class="py-card-title">Python 線上練習</h3>
+              <p class="py-card-desc">直接在瀏覽器裏跑 Python。</p>
+            </div>
+          </div>
+          <span class="py-card-arrow">›</span>
+        </summary>
 
-      <div class="py-runner">
-        <div class="py-toolbar">
-          <span class="py-label">Python</span>
-          <button class="py-run-btn" id="py-run-btn" disabled>
-            <span class="py-run-icon">▶</span>
-            <span id="py-run-text">執行</span>
-          </button>
-        </div>
-        <textarea class="py-editor" id="py-editor" spellcheck="false" placeholder="在這裡寫 Python 程式碼...">print("Hello, World!")
+        <div class="py-card-body">
+          <div class="py-runner">
+            <div class="py-toolbar">
+              <span class="py-label">Python</span>
+              <button class="py-run-btn" id="py-run-btn" disabled>
+                <span class="py-run-icon">▶</span>
+                <span id="py-run-text">執行</span>
+              </button>
+            </div>
+            <textarea class="py-editor" id="py-editor" spellcheck="false" placeholder="在這裡寫 Python 程式碼...">print("Hello, World!")
 
 # 列表推導式
 squares = [x**2 for x in range(10)]
@@ -35,12 +45,14 @@ def fibonacci(n):
     return result
 
 print("費波那契:", fibonacci(15))</textarea>
-        <div class="py-output-header">
-          <span class="py-label">輸出</span>
-          <span class="py-status" id="py-status">準備中…</span>
+            <div class="py-output-header">
+              <span class="py-label">輸出</span>
+              <span class="py-status" id="py-status">點擊展開後載入…</span>
+            </div>
+            <pre class="py-output" id="py-output">展開後自動載入 Python 環境。</pre>
+          </div>
         </div>
-        <pre class="py-output" id="py-output">載入 Python 執行環境中，請稍候…</pre>
-      </div>
+      </details>
     </article>
 
     <article>
@@ -49,11 +61,83 @@ print("費波那契:", fibonacci(15))</textarea>
   </section>
 
   <style>
-    .py-runner {
+    /* ── Collapsible Card ── */
+    .py-card {
       border: 1px solid var(--color-border);
       border-radius: 10px;
       overflow: hidden;
       margin-bottom: 1.5rem;
+      transition: border-color 0.2s;
+    }
+
+    .py-card[open] {
+      border-color: var(--color-accent);
+    }
+
+    .py-card-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      list-style: none;
+      transition: background 0.15s;
+      user-select: none;
+    }
+
+    .py-card-summary::-webkit-details-marker { display: none; }
+    .py-card-summary::marker { content: ''; }
+
+    .py-card-summary:hover {
+      background: var(--color-border);
+    }
+
+    .py-card-left {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .py-card-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .py-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    .py-card-desc {
+      font-size: 0.85rem;
+      color: var(--color-muted);
+      margin: 0.15rem 0 0;
+    }
+
+    .py-card-arrow {
+      font-size: 1.2rem;
+      color: var(--color-muted);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .py-card[open] .py-card-arrow {
+      transform: rotate(90deg);
+    }
+
+    .py-card-body {
+      border-top: 1px solid var(--color-border);
+      padding: 1rem;
+    }
+
+    /* ── Runner ── */
+    .py-runner {
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      overflow: hidden;
     }
 
     .py-toolbar {
@@ -161,6 +245,7 @@ print("費波那契:", fibonacci(15))</textarea>
   </style>
 
   <script>
+    const card = document.getElementById('py-card') as HTMLDetailsElement;
     const runBtn = document.getElementById('py-run-btn') as HTMLButtonElement;
     const editor = document.getElementById('py-editor') as HTMLTextAreaElement;
     const output = document.getElementById('py-output') as HTMLPreElement;
@@ -169,11 +254,13 @@ print("費波那契:", fibonacci(15))</textarea>
 
     let pyodide: any = null;
     let loading = false;
+    let loaded = false;
 
     async function initPyodide() {
       if (pyodide || loading) return;
       loading = true;
       status.textContent = '載入中…';
+      output.textContent = '正在下載 Python 執行環境（約 8MB），請稍候…';
 
       try {
         const script = document.createElement('script');
@@ -186,6 +273,7 @@ print("費波那契:", fibonacci(15))</textarea>
 
         // @ts-ignore — loadPyodide is a global from pyodide.js
         pyodide = await window.loadPyodide();
+        loaded = true;
         status.textContent = '已就緒';
         output.textContent = 'Python 環境已就緒，可以開始寫 code 了。';
         runBtn.disabled = false;
@@ -226,7 +314,6 @@ sys.stderr = stderrCapture
           pyodide.runPython(code);
         } catch (e: any) {
           const errMsg = e.message || String(e);
-          // Try to extract just the Python traceback
           const pythonError = errMsg.replace(/PythonError: Traceback.*?\n/, '').trim();
           output.classList.remove('running');
           output.classList.add('has-error');
@@ -255,18 +342,20 @@ sys.stderr = stderrCapture
       }
     }
 
-    // Auto-load Pyodide on page load
-    initPyodide();
+    // Load Pyodide only when card is opened
+    card.addEventListener('toggle', () => {
+      if (card.open && !loaded && !loading) {
+        initPyodide();
+      }
+    });
 
     runBtn.addEventListener('click', runCode);
 
-    // Ctrl+Enter / Cmd+Enter to run
     editor.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         if (!runBtn.disabled) runCode();
       }
-      // Tab to indent
       if (e.key === 'Tab') {
         e.preventDefault();
         const start = editor.selectionStart;
