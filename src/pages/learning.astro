@@ -438,9 +438,32 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     .py-output.running { color: var(--color-muted); }
 
     @media (max-width: 640px) {
-      .voc-choices { grid-template-columns: 1fr; }
+      .voc-choices {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+      .voc-choice {
+        padding: 0.65rem 0.85rem;
+        font-size: 0.88rem;
+      }
+      .voc-quiz-body {
+        padding: 1rem 0.8rem;
+        min-height: auto;
+      }
+      .voc-question-word {
+        font-size: 1.3rem;
+        margin-bottom: 0.25rem;
+      }
+      .voc-question-hint {
+        font-size: 0.78rem;
+        margin-bottom: 0.6rem;
+      }
+      .voc-feedback {
+        margin-top: 0.6rem;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+      }
       .voc-day-list { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-      .voc-question-word { font-size: 1.4rem; }
     }
   </style>
 
@@ -480,6 +503,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       let wrong = 0;
       let answered = false;
       let wrongWords: { en: string; zh: string }[] = [];
+
+      function showNextButton() {
+        quizNext.style.display = 'inline-block';
+        setTimeout(() => {
+          quizNext.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+      }
 
       function loadHistory(): Record<number, { correct: number; wrong: number; date: string }> {
         try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
@@ -668,8 +698,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           }
           quizScore.textContent = `✓ ${correct}  ✗ ${wrong}`;
           submitBtn.style.display = 'none';
+          input.blur();
           input.disabled = true;
-          quizNext.style.display = 'inline-block';
+          showNextButton();
         }
 
         submitBtn.addEventListener('click', checkAnswer);
@@ -733,7 +764,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
               fb.innerHTML = `<div class="voc-feedback wrong-fb">✗ 正確答案已標示</div>`;
             }
             quizScore.textContent = `✓ ${correct}  ✗ ${wrong}`;
-            quizNext.style.display = 'inline-block';
+            showNextButton();
           });
         });
       }
