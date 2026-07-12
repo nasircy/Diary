@@ -5,7 +5,5 @@
   {"bankId": "ai-planner-114-t4-k2", "bankName": "114年第四梯次初級AI應用規劃師第二科生成式AI應用與規劃", "category": "AI 應用規劃師"},
   {"bankId": "ai-planner-march-k1", "bankName": "科目1人工智慧基礎概論_3月考題", "category": "AI 應用規劃師"},
   {"bankId": "ai-planner-march-k2", "bankName": "科目2生成式AI應用與規劃_3月考題", "category": "AI 應用規劃師"},
-  {"bankId": "ipas-ai-planner-sample-114", "bankName": "iPAS AI應用規劃師初級能力鑑定-考試樣題(114年9月版)", "category": "AI 應用規劃師"},
-  {"bankId": "general-knowledge", "bankName": "綜合科普與邏輯思維趣味測驗", "category": "其他考卷"},
-  {"bankId": "web-frontend-basics", "bankName": "前端開發核心技術檢定", "category": "其他考卷"}
+  {"bankId": "ipas-ai-planner-sample-114", "bankName": "iPAS AI應用規劃師初級能力鑑定-考試樣題(114年9月版)", "category": "AI 應用規劃師"}
 ]
