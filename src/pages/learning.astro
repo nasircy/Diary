@@ -43,7 +43,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <div id="voc-quiz" class="voc-quiz" style="display:none">
             <div class="voc-quiz-header">
               <span class="voc-quiz-title" id="voc-quiz-title">Day 1</span>
-              <span class="voc-quiz-progress" id="voc-quiz-progress">1 / 20</span>
+              <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <span class="voc-quiz-progress" id="voc-quiz-progress">1 / 20</span>
+                <button id="voc-quiz-abort" class="voc-abort-btn">返回</button>
+              </div>
             </div>
             <div class="voc-quiz-body" id="voc-quiz-body"></div>
             <div class="voc-quiz-footer">
@@ -229,6 +232,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       padding: 0.75rem 1.1rem;
       background: var(--color-border);
       border-bottom: 1px solid var(--color-border);
+    }
+    .voc-abort-btn {
+      padding: 0.25rem 0.6rem;
+      background: none;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      color: var(--color-muted);
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .voc-abort-btn:hover {
+      border-color: var(--color-accent);
+      color: var(--color-text);
     }
     .voc-quiz-title {
       font-family: var(--font-heading);
@@ -435,6 +453,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       const quizBody = document.getElementById('voc-quiz-body')!;
       const quizScore = document.getElementById('voc-quiz-score')!;
       const quizNext = document.getElementById('voc-quiz-next')! as HTMLButtonElement;
+      const quizAbortBtn = document.getElementById('voc-quiz-abort') as HTMLButtonElement;
       const resultEl = document.getElementById('voc-result')!;
       const vocCard = document.getElementById('voc-card') as HTMLDetailsElement;
 
@@ -495,6 +514,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         }
         qIndex = 0; correct = 0; wrong = 0; wrongWords = [];
         shuffle(currentWords);
+        currentWords = currentWords.slice(0, 40);
         setupEl.style.display = 'none';
         resultEl.style.display = 'none';
         quizEl.style.display = 'block';
@@ -668,6 +688,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       startBtn.addEventListener('click', () => {
         const day = parseInt(daySelectEl.value);
         if (day) startQuiz(day);
+      });
+
+      quizAbortBtn.addEventListener('click', () => {
+        if (confirm('確定要離開本次測驗嗎？')) {
+          backToDays();
+        }
       });
 
       quizNext.addEventListener('click', () => { qIndex++; renderQuestion(); });
