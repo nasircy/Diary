@@ -11,7 +11,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <style is:global>
-  #quiz-app { min-height: 60vh; }
+  #quiz-app {
+    min-height: 60vh;
+    font-family: var(--font-body);
+    color: var(--color-text);
+  }
+
+  #quiz-app * {
+    font-family: inherit;
+  }
 
   .cat-heading {
     font-family: var(--font-heading);
