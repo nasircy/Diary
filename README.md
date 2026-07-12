@@ -21,6 +21,3 @@
 - Google Fonts — 思源宋體 + 芫荽體
 - GitHub Actions — 自動部署至 GitHub Pages
 
-## 部署
-
-推送到 main 分支後，GitHub Actions 會自動構建並部署至 GitHub Pages。
