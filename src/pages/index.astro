@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+const base = '/Diary';
 ---
 
 <BaseLayout title="首頁">
@@ -7,123 +8,59 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <h1>Main</h1>
     <p style="color: var(--color-muted); margin-bottom: 2rem;">記錄每天成長了多少，持之以恆的記錄</p>
 
-    <article class="diary-article">
-      <details class="diary-card">
-        <summary class="diary-summary">
-          <div class="diary-header">
-            <time class="diary-time">2026 年 7 月 1 日</time>
-            <span class="diary-arrow">›</span>
-          </div>
-          <h3 class="diary-title">新的開始</h3>
-          <p class="diary-preview">決定用這個 Repo 來記錄自己的每一天，像是一本專屬的日記本。</p>
-        </summary>
-        <div class="diary-content">
-          <p>
-            也即將要邁入大三了，我覺得大學生活也即將過半了，在大學的這兩年下來，除了一方面是自己 搬出來臺北北漂住，然後生存，課業方面 ，當然有擅長的跟非常不擅長的（像是數學XD ） 而 日常生活中除了讀書，我也覺得北部很有趣，在大學期間這兩年去了蠻多地方，也體驗蠻多事物，但偶爾也是會思考，我大學到底做了什麼 ，有沒有把時間效率最大化， 這個 日記本，我覺得我會把無論是我的小專案、還是我的心情還是我的 一些正在學習的東西，放上來，並且督促自己！ 讓自己越來越進步 ，不要讓大學生活 渾渾噩噩跑掉了！
-          </p>
-          <p>
-            這個也是 Nasir 我的第一篇開頭！
-          </p>
-        </div>
-      </details>
+    <article class="index-article">
+      <time class="post-time">2026 年 7 月 1 日</time>
+      <h3 class="post-title">
+        <a href={`${base}/posts/2026-07-01`}>新的開始</a>
+      </h3>
+      <p class="post-preview">
+        決定用這個 Repo 來記錄自己的每一天，像是一本專屬的日記本。... <a href={`${base}/posts/2026-07-01`} class="read-more">閱讀全文 →</a>
+      </p>
     </article>
   </section>
 
   <style>
-    .diary-article {
+    .index-article {
       padding: 1.5rem 0;
       border-bottom: 1px solid var(--color-border);
     }
-    .diary-article:last-child {
+    .index-article:last-child {
       border-bottom: none;
     }
-    .diary-card {
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      overflow: hidden;
-      transition: border-color 0.25s, box-shadow 0.25s;
-    }
-    .diary-card[open] {
-      border-color: var(--color-accent);
-      box-shadow: 0 4px 20px rgba(74, 103, 65, 0.06);
-    }
-    .diary-summary {
-      padding: 1.25rem 1.5rem;
-      cursor: pointer;
-      list-style: none;
-      user-select: none;
-    }
-    .diary-summary::-webkit-details-marker {
-      display: none;
-    }
-    .diary-summary::marker {
-      content: '';
-    }
-    .diary-summary:hover {
-      background: rgba(74, 103, 65, 0.02);
-    }
-    .diary-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.4rem;
-    }
-    .diary-time {
+    .post-time {
       font-size: 0.85rem;
       color: var(--color-muted);
+      display: block;
+      margin-bottom: 0.5rem;
     }
-    .diary-arrow {
-      font-size: 1.2rem;
-      color: var(--color-muted);
-      transition: transform 0.25s;
+    .post-title {
+      font-size: 1.35rem;
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
     }
-    .diary-card[open] .diary-arrow {
-      transform: rotate(90deg);
+    .post-title a {
+      color: var(--color-text);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .post-title a:hover {
       color: var(--color-accent);
     }
-    .diary-title {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--color-text);
-    }
-    .diary-preview {
+    .post-preview {
       margin: 0;
       font-size: 0.95rem;
       color: var(--color-muted);
       line-height: 1.6;
     }
-    .diary-card[open] .diary-preview {
-      display: none; /* Hide preview when full content is open */
-    }
-    .diary-content {
-      padding: 0 1.5rem 1.5rem 1.5rem;
-      border-top: 1px dashed var(--color-border);
-      padding-top: 1.25rem;
-      animation: slideDown 0.3s ease-out;
-    }
-    .diary-content p {
-      margin: 0 0 1rem 0;
-      font-size: 0.95rem;
-      color: var(--color-text);
-      line-height: 1.8;
-      text-align: justify;
-    }
-    .diary-content p:last-child {
-      margin-bottom: 0;
+    .read-more {
+      font-size: 0.88rem;
+      color: var(--color-accent);
+      margin-left: 0.5rem;
       font-weight: 500;
+      text-decoration: none;
     }
-    
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .read-more:hover {
+      text-decoration: underline;
     }
   </style>
 </BaseLayout>

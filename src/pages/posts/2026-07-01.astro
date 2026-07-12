@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const base = '/Diary';
+---
+
+<BaseLayout title="新的開始">
+  <article class="post-article">
+    <div class="post-header">
+      <a href={`${base}/`} class="back-link">← 返回首頁</a>
+      <time class="post-time">2026 年 7 月 1 日</time>
+      <h1 class="post-title">新的開始</h1>
+    </div>
+    
+    <div class="post-content">
+      <p class="post-intro">
+        決定用這個 Repo 來記錄自己的每一天，像是一本專屬的日記本。
+      </p>
+      <p>
+        也即將要邁入大三了，我覺得大學生活也即將過半了，在大學的這兩年下來，除了一方面是自己 搬出來臺北北漂住，然後生存，課業方面 ，當然有擅長的跟非常不擅長的（像是數學XD ） 而 日常生活中除了讀書，我也覺得北部很有趣，在大學期間這兩年去了蠻多地方，也體驗蠻多事物，但偶爾也是會思考，我大學到底做了什麼 ，有沒有把時間效率最大化， 這個 日記本，我覺得我會把無論是我的小專案、還是我的心情還是我的 一些正在學習的東西，放上來，並且督促自己！ 讓自己越來越進步 ，不要讓大學生活 渾渾噩噩跑掉了！
+      </p>
+      <p class="post-outro">
+        這個也是 Nasir 我的第一篇開頭！
+      </p>
+    </div>
+  </article>
+
+  <style>
+    .post-article {
+      max-width: 660px;
+      margin: 0 auto;
+      padding: 1rem 0;
+    }
+    .post-header {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 1.5rem;
+    }
+    .back-link {
+      display: inline-block;
+      font-size: 0.9rem;
+      color: var(--color-accent);
+      margin-bottom: 1.5rem;
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .back-link:hover {
+      transform: translateX(-4px);
+      text-decoration: underline;
+    }
+    .post-time {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    .post-title {
+      font-size: 2.2rem;
+      margin: 0;
+      color: var(--color-text);
+      line-height: 1.4;
+    }
+    .post-content {
+      line-height: 1.9;
+    }
+    .post-content p {
+      margin-bottom: 1.5rem;
+      font-size: 1.05rem;
+      color: var(--color-text);
+      text-align: justify;
+    }
+    .post-intro {
+      font-size: 1.15rem !important;
+      color: var(--color-muted) !important;
+      font-style: italic;
+      border-left: 3px solid var(--color-accent);
+      padding-left: 1rem;
+      margin-bottom: 2rem !important;
+    }
+    .post-outro {
+      margin-top: 2.5rem;
+      font-weight: 700;
+      color: var(--color-accent) !important;
+      font-size: 1.1rem !important;
+    }
+  </style>
+</BaseLayout>
