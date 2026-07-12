@@ -1,0 +1,734 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="FocusClock">
+  <section>
+    <h1>FocusClock</h1>
+    <p style="color: var(--color-muted); margin-bottom: 2rem;">精美計時器工具 — 支援多組計時器同時運行、環形進度條、自訂鈴聲、暫停/繼續</p>
+
+    <div class="clock-container">
+      <div class="clock-header">
+        <nav class="segmented-control">
+          <button class="segment active" data-target="alarms-view">Alarms</button>
+          <button class="segment" data-target="timers-view">Timers</button>
+        </nav>
+        <button class="add-btn" id="header-add-btn">＋</button>
+      </div>
+
+      <div class="clock-body">
+        <!-- Timers View -->
+        <div id="timers-view" class="view active">
+          <div class="setup-container">
+            <div class="time-input">
+              <input type="number" id="input-h" placeholder="00" min="0" max="99" onfocus="this.select()" title="Hours">
+              <span class="delimiter">:</span>
+              <input type="number" id="input-m" placeholder="00" min="0" max="59" onfocus="this.select()" title="Minutes">
+              <span class="delimiter">:</span>
+              <input type="number" id="input-s" placeholder="00" min="0" max="59" onfocus="this.select()" title="Seconds">
+            </div>
+
+            <div class="options-panel">
+              <div class="option-row">
+                <label>Label</label>
+                <input type="text" id="setup-label" class="option-input" placeholder="Timer">
+              </div>
+              <div class="option-separator"></div>
+              <div class="option-row">
+                <label>When Timer Ends</label>
+                <select id="setup-sound" class="option-select">
+                  <option value="gentle">Gentle</option>
+                  <option value="beep">Beep</option>
+                  <option value="chime">Chime</option>
+                  <option value="alert">Alert</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="start-btn" id="start-btn">Start</button>
+
+            <div class="recents-section">
+              <h4 class="recents-title">Recents</h4>
+              <div id="recent-timers-list" class="recents-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alarms View (Dashboard) -->
+        <div id="alarms-view" class="view">
+          <div class="dashboard">
+            <div id="alarms-grid" class="alarms-grid">
+              <div class="empty-state" id="empty-alarms">
+                <p>No active alarms</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Focus View -->
+        <div id="focus-view" class="view">
+          <div class="focus-container">
+            <div class="timer-ring-wrapper">
+              <svg class="timer-ring" width="300" height="300">
+                <circle class="ring-bg" stroke-width="8" fill="transparent" r="130" cx="150" cy="150"/>
+                <circle class="ring-progress" stroke-width="8" fill="transparent" r="130" cx="150" cy="150"/>
+              </svg>
+              <div class="timer-info">
+                <div class="end-time">
+                  <span id="end-time-display">--:--</span>
+                </div>
+                <div class="main-time" id="focus-time-display">00:00</div>
+                <div class="timer-label" id="focus-label">Timer</div>
+                <select id="focus-sound-select" class="focus-sound-select">
+                  <option value="gentle">Gentle</option>
+                  <option value="beep">Beep</option>
+                  <option value="chime">Chime</option>
+                  <option value="alert">Alert</option>
+                </select>
+              </div>
+            </div>
+            <div class="timer-controls">
+              <button class="control-btn cancel" id="cancel-btn">Cancel</button>
+              <button class="control-btn pause" id="pause-btn">Pause</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .clock-container {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .clock-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+  }
+
+  .segmented-control {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--color-bg);
+    border-radius: 8px;
+    padding: 3px;
+  }
+
+  .segment {
+    background: transparent;
+    border: none;
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--color-muted);
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .segment.active {
+    background: white;
+    color: var(--color-text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .add-btn {
+    position: absolute;
+    right: 1.5rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .add-btn:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .clock-body {
+    min-height: 400px;
+  }
+
+  .view {
+    display: none;
+    padding: 2rem;
+  }
+
+  .view.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Timers View */
+  .setup-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .time-input {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .time-input input {
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    font-size: 3rem;
+    font-weight: 300;
+    width: 80px;
+    text-align: center;
+    outline: none;
+    font-family: var(--font-heading);
+  }
+
+  .time-input input::placeholder {
+    color: var(--color-border);
+  }
+
+  .delimiter {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--color-muted);
+  }
+
+  .options-panel {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .option-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 1rem;
+  }
+
+  .option-row label {
+    font-size: 0.9rem;
+    color: var(--color-text);
+  }
+
+  .option-input {
+    background: transparent;
+    border: none;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    text-align: right;
+    outline: none;
+    width: 120px;
+  }
+
+  .option-select {
+    background: transparent;
+    border: none;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    text-align: right;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .option-separator {
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .start-btn {
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    padding: 0.6rem 2rem;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .start-btn:hover {
+    opacity: 0.9;
+  }
+
+  .recents-section {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .recents-title {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .recents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--color-bg);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .recent-item:hover {
+    background: var(--color-border);
+  }
+
+  .recent-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .recent-time {
+    font-size: 1rem;
+    font-weight: 400;
+    font-family: var(--font-heading);
+  }
+
+  .recent-label {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  /* Dashboard */
+  .dashboard {
+    padding: 0;
+  }
+
+  .alarms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 0;
+    color: var(--color-muted);
+  }
+
+  .dash-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .dash-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .dash-ring {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 0.75rem;
+  }
+
+  .dash-ring svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+
+  .dash-ring .dash-bg {
+    stroke: var(--color-border);
+  }
+
+  .dash-ring .dash-progress {
+    stroke: var(--color-accent);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+  }
+
+  .dash-time {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
+    font-family: var(--font-heading);
+    font-weight: 400;
+  }
+
+  .dash-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    text-align: center;
+  }
+
+  .dash-end {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+
+  /* Focus View */
+  .focus-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .timer-ring-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .timer-ring {
+    transform: rotate(-90deg);
+  }
+
+  .ring-bg {
+    stroke: var(--color-border);
+  }
+
+  .ring-progress {
+    stroke: var(--color-accent);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+  }
+
+  .timer-info {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .end-time {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+  }
+
+  .main-time {
+    font-size: 3rem;
+    font-weight: 300;
+    font-family: var(--font-heading);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .timer-label {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+
+  .focus-sound-select {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .control-btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .control-btn:hover {
+    opacity: 0.9;
+  }
+
+  .control-btn.cancel {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .control-btn.pause {
+    background: var(--color-accent);
+    color: white;
+  }
+</style>
+
+<script>
+  function generateBeep(freq: number, duration: number, type: OscillatorType = 'sine') {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + duration);
+  }
+
+  const sounds: Record<string, () => void> = {
+    gentle: () => {
+      generateBeep(523, 0.3);
+      setTimeout(() => generateBeep(659, 0.3), 300);
+      setTimeout(() => generateBeep(784, 0.5), 600);
+    },
+    beep: () => {
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => generateBeep(880, 0.15, 'square'), i * 300);
+      }
+    },
+    chime: () => {
+      generateBeep(1047, 0.2);
+      setTimeout(() => generateBeep(1319, 0.2), 200);
+      setTimeout(() => generateBeep(1568, 0.3), 400);
+      setTimeout(() => generateBeep(2093, 0.5), 600);
+    },
+    alert: () => {
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => generateBeep(1000, 0.1, 'sawtooth'), i * 150);
+      }
+    }
+  };
+
+  function playSound(name: string) {
+    sounds[name]?.() || sounds.gentle();
+  }
+
+  const segmentedBtns = document.querySelectorAll('.segment');
+  const views: Record<string, HTMLElement> = {};
+  document.querySelectorAll('.view').forEach(v => { views[v.id] = v; });
+
+  const inputH = document.getElementById('input-h') as HTMLInputElement;
+  const inputM = document.getElementById('input-m') as HTMLInputElement;
+  const inputS = document.getElementById('input-s') as HTMLInputElement;
+  const setupLabel = document.getElementById('setup-label') as HTMLInputElement;
+  const setupSound = document.getElementById('setup-sound') as HTMLSelectElement;
+  const startBtn = document.getElementById('start-btn')!;
+  const headerAddBtn = document.getElementById('header-add-btn')!;
+
+  const alarmsGrid = document.getElementById('alarms-grid')!;
+  const emptyAlarms = document.getElementById('empty-alarms')!;
+
+  const focusTimeDisplay = document.getElementById('focus-time-display')!;
+  const endTimeDisplay = document.getElementById('end-time-display')!;
+  const focusLabel = document.getElementById('focus-label')!;
+  const ringProgress = document.querySelector('.ring-progress') as SVGCircleElement;
+  const focusSoundSelect = document.getElementById('focus-sound-select') as HTMLSelectElement;
+  const cancelBtn = document.getElementById('cancel-btn')!;
+  const pauseBtn = document.getElementById('pause-btn')!;
+
+  const radius = ringProgress.r.baseVal.value;
+  const circumference = radius * 2 * Math.PI;
+  ringProgress.style.strokeDasharray = `${circumference} ${circumference}`;
+
+  let activeTimers: any[] = [];
+  let focusedTimerId: number | null = null;
+
+  function switchView(viewId: string) {
+    Object.values(views).forEach(v => v.classList.remove('active'));
+    views[viewId].classList.add('active');
+    segmentedBtns.forEach(btn => {
+      if (btn.getAttribute('data-target') === viewId) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+    if (viewId === 'alarms-view') renderDashboard();
+    if (viewId === 'focus-view') updateFocusUI();
+  }
+
+  segmentedBtns.forEach(btn => {
+    btn.addEventListener('click', () => switchView(btn.getAttribute('data-target')!));
+  });
+  headerAddBtn.addEventListener('click', () => switchView('timers-view'));
+
+  function formatTime(secs: number) {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+
+  function calcEndTime(remainingSeconds: number) {
+    const now = new Date();
+    now.setSeconds(now.getSeconds() + remainingSeconds);
+    let h = now.getHours(), m = now.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12; h = h ? h : 12;
+    m = m < 10 ? 0 + m : m;
+    return `${h}:${m} ${ampm}`;
+  }
+
+  function tickAll() {
+    let needsRender = false;
+    activeTimers.forEach(t => {
+      if (t.isRunning && t.remaining > 0) {
+        t.remaining--;
+        needsRender = true;
+        if (t.remaining <= 0) {
+          t.isRunning = false;
+          t.isFinished = true;
+          playSound(t.sound);
+        } else {
+          t.expectedEnd = calcEndTime(t.remaining);
+        }
+      }
+    });
+    if (needsRender || activeTimers.length > 0) {
+      if (views['alarms-view'].classList.contains('active')) renderDashboard();
+      if (views['focus-view'].classList.contains('active')) updateFocusUI();
+    }
+  }
+
+  setInterval(tickAll, 1000);
+
+  function renderDashboard() {
+    Array.from(alarmsGrid.children).forEach(child => {
+      if (child.id !== 'empty-alarms') child.remove();
+    });
+    if (activeTimers.length === 0) {
+      emptyAlarms.style.display = 'block';
+      return;
+    }
+    emptyAlarms.style.display = 'none';
+    activeTimers.forEach(t => {
+      const pct = t.total > 0 ? t.remaining / t.total : 0;
+      const dashCircum = 2 * Math.PI * 35;
+      const offset = dashCircum - pct * dashCircum;
+      const card = document.createElement('div');
+      card.className = 'dash-card';
+      card.innerHTML = `
+        <div class="dash-ring">
+          <svg>
+            <circle class="dash-bg" stroke-width="6" fill="transparent" r="35" cx="40" cy="40"/>
+            <circle class="dash-progress" stroke-width="6" fill="transparent" r="35" cx="40" cy="40" style="stroke-dasharray: ${dashCircum}; stroke-dashoffset: ${offset};"/>
+          </svg>
+          <div class="dash-time">${t.isFinished ? '00:00' : formatTime(t.remaining)}</div>
+        </div>
+        <div class="dash-label">${t.label || 'Timer'}</div>
+        <div class="dash-end">${t.isFinished ? 'Ringing!' : (t.isRunning ? t.expectedEnd : 'Paused')}</div>
+      `;
+      card.addEventListener('click', () => {
+        focusedTimerId = t.id;
+        switchView('focus-view');
+      });
+      alarmsGrid.appendChild(card);
+    });
+  }
+
+  function updateFocusUI() {
+    const t = activeTimers.find(x => x.id === focusedTimerId);
+    if (!t) return switchView('alarms-view');
+    focusTimeDisplay.textContent = t.isFinished ? '00:00' : formatTime(t.remaining);
+    focusLabel.textContent = t.label || 'Timer';
+    focusSoundSelect.value = t.sound;
+    if (t.isFinished) {
+      endTimeDisplay.textContent = "Time's up";
+      pauseBtn.style.display = 'none';
+    } else {
+      pauseBtn.style.display = 'inline-flex';
+      pauseBtn.textContent = t.isRunning ? 'Pause' : 'Resume';
+      endTimeDisplay.textContent = t.isRunning ? t.expectedEnd : 'Paused';
+    }
+    const pct = t.total > 0 ? t.remaining / t.total : 0;
+    ringProgress.style.strokeDashoffset = String(circumference - pct * circumference);
+  }
+
+  startBtn.addEventListener('click', () => {
+    const h = parseInt(inputH.value) || 0;
+    const m = parseInt(inputM.value) || 0;
+    const s = parseInt(inputS.value) || 0;
+    const total = h * 3600 + m * 60 + s;
+    if (total <= 0) return;
+    const newTimer = {
+      id: Date.now(),
+      total, remaining: total,
+      isRunning: true, isFinished: false,
+      expectedEnd: calcEndTime(total),
+      label: setupLabel.value,
+      sound: setupSound.value
+    };
+    activeTimers.push(newTimer);
+    inputH.value = ''; inputM.value = ''; inputS.value = '';
+    focusedTimerId = newTimer.id;
+    switchView('focus-view');
+  });
+
+  pauseBtn.addEventListener('click', () => {
+    const t = activeTimers.find(x => x.id === focusedTimerId);
+    if (!t) return;
+    t.isRunning = !t.isRunning;
+    if (t.isRunning) t.expectedEnd = calcEndTime(t.remaining);
+    updateFocusUI();
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    const idx = activeTimers.findIndex(x => x.id === focusedTimerId);
+    if (idx > -1) {
+      if (activeTimers[idx].isFinished) {
+        playSound('gentle');
+      }
+      activeTimers.splice(idx, 1);
+    }
+    focusedTimerId = null;
+    switchView('alarms-view');
+  });
+
+  [inputH, inputM, inputS].forEach(inp => inp.addEventListener('blur', () => {
+    if (inp.value.length === 1) inp.value = inp.value.padStart(2, '0');
+  }));
+</script>
