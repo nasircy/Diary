@@ -503,12 +503,37 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       let wrong = 0;
       let answered = false;
       let wrongWords: { en: string; zh: string }[] = [];
+      let originalTestedWords: string[] = [];
+      let answeredWords: string[] = [];
+      let totalWordsCount = 0;
 
       function showNextButton() {
         quizNext.style.display = 'inline-block';
         setTimeout(() => {
           quizNext.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 100);
+      }
+
+      function recordWordAnswered(wordEn: string) {
+        wordEn = wordEn.toLowerCase();
+        if (answeredWords.includes(wordEn)) return;
+        answeredWords.push(wordEn);
+
+        let tempTested = [...originalTestedWords];
+        for (const w of answeredWords) {
+          if (!tempTested.includes(w)) {
+            tempTested.push(w);
+            if (tempTested.length >= totalWordsCount) {
+              tempTested = [];
+              for (const prev of answeredWords) {
+                if (originalTestedWords.includes(prev)) {
+                  tempTested.push(prev);
+                }
+              }
+            }
+          }
+        }
+        saveTestedWords(currentDay, tempTested);
       }
 
       function loadHistory(): Record<number, { correct: number; wrong: number; date: string }> {
@@ -602,30 +627,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           return;
         }
         qIndex = 0; correct = 0; wrong = 0; wrongWords = [];
+        answeredWords = [];
+        totalWordsCount = data.words.length;
         
         let tested = loadTestedWords(day);
+        originalTestedWords = [...tested];
+        
         let pool = data.words.filter(w => !tested.includes(w.en.toLowerCase()));
         let chosenWords = [];
         
         if (pool.length >= 40) {
           shuffle(pool);
           chosenWords = pool.slice(0, 40);
-          tested = [...tested, ...chosenWords.map(w => w.en.toLowerCase())];
-          saveTestedWords(day, tested);
         } else {
           chosenWords = [...pool];
           shuffle(chosenWords);
-          tested = [];
-          const needed = Math.min(40, data.words.length) - chosenWords.length;
+          const needed = Math.min(40, totalWordsCount) - chosenWords.length;
           if (needed > 0) {
             const justChoseEn = chosenWords.map(w => w.en.toLowerCase());
             let freshPool = data.words.filter(w => !justChoseEn.includes(w.en.toLowerCase()));
             shuffle(freshPool);
             const topUp = freshPool.slice(0, needed);
             chosenWords = [...chosenWords, ...topUp];
-            tested = topUp.map(w => w.en.toLowerCase());
           }
-          saveTestedWords(day, tested);
         }
         
         currentWords = chosenWords;
@@ -686,6 +710,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           answered = true;
           const ans = input.value.trim().toLowerCase();
           const correctAns = word.en.toLowerCase();
+          
+          recordWordAnswered(word.en);
+          
           if (ans === correctAns) {
             correct++;
             input.classList.add('correct');
@@ -745,6 +772,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           btn.addEventListener('click', () => {
             if (answered) return;
             answered = true;
+            
+            recordWordAnswered(word.en);
+            
             const val = (btn as HTMLElement).dataset.val!;
             const correctVal = word[field];
             (btn as HTMLElement).classList.add('chosen');
