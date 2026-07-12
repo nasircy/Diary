@@ -436,16 +436,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       async function discoverDays() {
         dayListEl.innerHTML = '<div class="voc-day-loading">載入中…</div>';
         allDays = [];
-        const checks: Promise<void>[] = [];
         for (let d = 1; d <= MAX_DAY; d++) {
-          checks.push(
-            fetch(VOC_BASE + `day${d}.json`, { method: 'GET' })
-              .then(r => { if (r.ok) allDays.push(d); })
-              .catch(() => {})
-          );
+          try {
+            const r = await fetch(VOC_BASE + `day${d}.json`, { method: 'GET' });
+            if (r.ok) {
+              allDays.push(d);
+            } else {
+              break;
+            }
+          } catch {
+            break;
+          }
         }
-        await Promise.all(checks);
-        allDays.sort((a, b) => a - b);
         renderDayList();
       }
 
