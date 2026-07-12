@@ -439,7 +439,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         const checks: Promise<void>[] = [];
         for (let d = 1; d <= MAX_DAY; d++) {
           checks.push(
-            fetch(VOC_BASE + `day${d}.json`, { method: 'HEAD' })
+            fetch(VOC_BASE + `day${d}.json`, { method: 'GET' })
               .then(r => { if (r.ok) allDays.push(d); })
               .catch(() => {})
           );
