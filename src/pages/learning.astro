@@ -446,6 +446,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 
   <script>
+    import Swal from 'sweetalert2';
+
     /* ============================================================
        TOEIC VOC Quiz
        ============================================================ */
@@ -558,7 +560,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           const r = await fetch(VOC_BASE + `day${day}.json`);
           data = await r.json();
         } catch {
-          alert('載入失敗。');
+          Swal.fire({
+            title: '載入失敗',
+            text: '無法讀取單字檔案，請確認網路連線或稍後再試。',
+            icon: 'error',
+            confirmButtonColor: 'var(--color-accent)',
+            background: document.body.classList.contains('dark') ? '#1a1a1a' : '#fafaf8',
+            color: document.body.classList.contains('dark') ? '#e0e0e0' : '#2c2c2c'
+          });
           return;
         }
         qIndex = 0; correct = 0; wrong = 0; wrongWords = [];
@@ -765,9 +774,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       });
 
       quizAbortBtn.addEventListener('click', () => {
-        if (confirm('確定要離開本次測驗嗎？')) {
-          backToDays();
-        }
+        const isDark = document.body.classList.contains('dark');
+        Swal.fire({
+          title: '確定要離開嗎？',
+          text: '本次測驗的進度將不會被儲存。',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: 'var(--color-accent)',
+          cancelButtonColor: 'var(--color-muted)',
+          confirmButtonText: '確定離開',
+          cancelButtonText: '取消',
+          background: isDark ? '#1a1a1a' : '#fafaf8',
+          color: isDark ? '#e0e0e0' : '#2c2c2c'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            backToDays();
+          }
+        });
       });
 
       quizNext.addEventListener('click', () => { qIndex++; renderQuestion(); });
