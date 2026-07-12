@@ -8,56 +8,34 @@ const base = '/Diary';
     <h1>Main</h1>
     <p style="color: var(--color-muted); margin-bottom: 2rem;">記錄每天成長了多少，持之以恆的記錄</p>
 
-    <article class="index-article">
-      <time class="post-time">2026 年 7 月 1 日</time>
-      <h3 class="post-title">
-        <a href={`${base}/posts/2026-07-01`}>新的開始</a>
+    <article>
+      <time>2026 年 7 月 1 日</time>
+      <h3>
+        <a href={`${base}/posts/2026-07-01`} class="post-title-link">新的開始</a>
       </h3>
-      <p class="post-preview">
-        決定用這個 Repo 來記錄自己的每一天，像是一本專屬的日記本。... <a href={`${base}/posts/2026-07-01`} class="read-more">閱讀全文 →</a>
+      <p>
+        決定用這個 Repo 來記錄自己的每一天，像是一本專屬的日記本。... 
+        <a href={`${base}/posts/2026-07-01`} class="read-more">閱讀全文 →</a>
       </p>
     </article>
   </section>
 
   <style>
-    .index-article {
-      padding: 1.5rem 0;
-      border-bottom: 1px solid var(--color-border);
-    }
-    .index-article:last-child {
-      border-bottom: none;
-    }
-    .post-time {
-      font-size: 0.85rem;
-      color: var(--color-muted);
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .post-title {
-      font-size: 1.35rem;
-      margin: 0 0 0.5rem 0;
-      font-weight: 600;
-    }
-    .post-title a {
+    .post-title-link {
       color: var(--color-text);
       text-decoration: none;
       transition: color 0.2s;
     }
-    .post-title a:hover {
+    .post-title-link:hover {
       color: var(--color-accent);
-    }
-    .post-preview {
-      margin: 0;
-      font-size: 0.95rem;
-      color: var(--color-muted);
-      line-height: 1.6;
+      text-decoration: none;
     }
     .read-more {
-      font-size: 0.88rem;
       color: var(--color-accent);
-      margin-left: 0.5rem;
-      font-weight: 500;
+      font-size: 0.88rem;
+      margin-left: 0.4rem;
       text-decoration: none;
+      font-weight: 500;
     }
     .read-more:hover {
       text-decoration: underline;
