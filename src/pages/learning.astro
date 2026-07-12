@@ -36,6 +36,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                 <option value="pick-en">選擇英文</option>
               </select>
             </div>
+            <div id="voc-status" class="voc-status"></div>
             <button id="voc-start-btn" class="voc-start-btn">開始測驗</button>
           </div>
 
@@ -211,6 +212,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
     .voc-start-btn:active {
       transform: translateY(0);
+    }
+    .voc-status {
+      font-size: 0.82rem;
+      color: var(--color-muted);
+      line-height: 1.5;
+      text-align: center;
+      background: var(--color-border);
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      margin-top: 0.25rem;
     }
     .voc-day-loading {
       padding: 2rem;
@@ -446,6 +457,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       const setupEl = document.getElementById('voc-setup')!;
       const daySelectEl = document.getElementById('voc-day-select') as HTMLSelectElement;
       const modeSelectEl = document.getElementById('voc-mode-select') as HTMLSelectElement;
+      const statusEl = document.getElementById('voc-status')!;
       const startBtn = document.getElementById('voc-start-btn') as HTMLButtonElement;
       const quizEl = document.getElementById('voc-quiz')!;
       const quizTitle = document.getElementById('voc-quiz-title')!;
@@ -475,6 +487,41 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         localStorage.setItem(STORAGE_KEY, JSON.stringify(h));
       }
 
+      const TESTED_KEY = 'toeic-voc-tested';
+      function loadTestedWords(day: number): string[] {
+        try {
+          const all = JSON.parse(localStorage.getItem(TESTED_KEY) || '{}');
+          return all[day] || [];
+        } catch {
+          return [];
+        }
+      }
+      function saveTestedWords(day: number, list: string[]) {
+        try {
+          const all = JSON.parse(localStorage.getItem(TESTED_KEY) || '{}');
+          all[day] = list;
+          localStorage.setItem(TESTED_KEY, JSON.stringify(all));
+        } catch {}
+      }
+
+      async function updateDayStatus() {
+        const day = parseInt(daySelectEl.value);
+        if (!day) {
+          statusEl.textContent = '';
+          return;
+        }
+        try {
+          const r = await fetch(VOC_BASE + `day${day}.json`);
+          const data = await r.json();
+          const total = data.words.length;
+          const tested = loadTestedWords(day);
+          const remaining = total - tested.length;
+          statusEl.innerHTML = `此天數共有 <strong>${total}</strong> 個單字，目前這一輪還剩 <strong>${remaining}</strong> 個未測試。`;
+        } catch {
+          statusEl.textContent = '';
+        }
+      }
+
       async function discoverDays() {
         daySelectEl.innerHTML = '<option value="">載入中…</option>';
         try {
@@ -491,6 +538,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         if (!allDays.length) {
           daySelectEl.innerHTML = '<option value="">無可用單字檔</option>';
           startBtn.disabled = true;
+          statusEl.textContent = '';
           return;
         }
         const hist = loadHistory();
@@ -500,21 +548,47 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           return `<option value="${d}">TOEIC VOC DAY ${d}${badge}</option>`;
         }).join('');
         startBtn.disabled = false;
+        updateDayStatus();
       }
 
       async function startQuiz(day: number) {
         currentDay = day;
+        let data;
         try {
           const r = await fetch(VOC_BASE + `day${day}.json`);
-          const data = await r.json();
-          currentWords = data.words;
+          data = await r.json();
         } catch {
           alert('載入失敗。');
           return;
         }
         qIndex = 0; correct = 0; wrong = 0; wrongWords = [];
-        shuffle(currentWords);
-        currentWords = currentWords.slice(0, 40);
+        
+        let tested = loadTestedWords(day);
+        let pool = data.words.filter(w => !tested.includes(w.en.toLowerCase()));
+        let chosenWords = [];
+        
+        if (pool.length >= 40) {
+          shuffle(pool);
+          chosenWords = pool.slice(0, 40);
+          tested = [...tested, ...chosenWords.map(w => w.en.toLowerCase())];
+          saveTestedWords(day, tested);
+        } else {
+          chosenWords = [...pool];
+          shuffle(chosenWords);
+          tested = [];
+          const needed = Math.min(40, data.words.length) - chosenWords.length;
+          if (needed > 0) {
+            const justChoseEn = chosenWords.map(w => w.en.toLowerCase());
+            let freshPool = data.words.filter(w => !justChoseEn.includes(w.en.toLowerCase()));
+            shuffle(freshPool);
+            const topUp = freshPool.slice(0, needed);
+            chosenWords = [...chosenWords, ...topUp];
+            tested = topUp.map(w => w.en.toLowerCase());
+          }
+          saveTestedWords(day, tested);
+        }
+        
+        currentWords = chosenWords;
         setupEl.style.display = 'none';
         resultEl.style.display = 'none';
         quizEl.style.display = 'block';
@@ -697,6 +771,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       });
 
       quizNext.addEventListener('click', () => { qIndex++; renderQuestion(); });
+
+      daySelectEl.addEventListener('change', updateDayStatus);
 
       vocCard.addEventListener('toggle', () => {
         if (vocCard.open && !allDays.length) discoverDays();
