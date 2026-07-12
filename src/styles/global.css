@@ -184,15 +184,6 @@ footer {
 }
 
 @media (max-width: 640px) {
-  nav {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  nav ul {
-    gap: 1rem;
-  }
-
   h1 {
     font-size: 1.6rem;
   }

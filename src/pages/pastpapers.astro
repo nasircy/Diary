@@ -3,145 +3,425 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="考古刷題">
-  <section>
-    <h1>考古刷題</h1>
-    <p style="color: var(--color-muted); margin-bottom: 2rem;">歷屆考題練習 — 點選直接開始刷題</p>
-
-    <div class="quiz-section">
-      <h2>AI 應用規劃師</h2>
-      <p style="color: var(--color-muted); margin-bottom: 1.25rem;">iPAS 初級 AI 應用規劃師歷屆試題與模擬考</p>
-
-      <div class="quiz-grid">
-        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-official-1" target="_blank" rel="noopener" class="quiz-card">
-          <div class="quiz-badge official">115年</div>
-          <h3>第一科 — 人工智慧基礎概論</h3>
-          <p>115年第一次初級 AI 應用規劃師</p>
-        </a>
-        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-official-2" target="_blank" rel="noopener" class="quiz-card">
-          <div class="quiz-badge official">115年</div>
-          <h3>第二科 — 生成式 AI 應用與規劃</h3>
-          <p>115年第一次初級 AI 應用規劃師</p>
-        </a>
-        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-114-t4-k1" target="_blank" rel="noopener" class="quiz-card">
-          <div class="quiz-badge">114年第四梯次</div>
-          <h3>第一科 — 人工智慧基礎概論</h3>
-          <p>114年第四梯次初級 AI 應用規劃師</p>
-        </a>
-        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-114-t4-k2" target="_blank" rel="noopener" class="quiz-card">
-          <div class="quiz-badge">114年第四梯次</div>
-          <h3>第二科 — 生成式 AI 應用與規劃</h3>
-          <p>114年第四梯次初級 AI 應用規劃師</p>
-        </a>
-        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-march-k1" target="_blank" rel="noopener" class="quiz-card">
-          <div class="quiz-badge">3月考題</div>
-          <h3>科目一 — 人工智慧基礎概論</h3>
-          <p>3月模擬考題</p>
-        </a>
-        <a href="https://pastpapers.nasirlin.net/?bank=ai-planner-march-k2" target="_blank" rel="noopener" class="quiz-card">
-          <div class="quiz-badge">3月考題</div>
-          <h3>科目二 — 生成式 AI 應用與規劃</h3>
-          <p>3月模擬考題</p>
-        </a>
-        <a href="https://pastpapers.nasirlin.net/?bank=ipas-ai-planner-sample-114" target="_blank" rel="noopener" class="quiz-card">
-          <div class="quiz-badge sample">樣題</div>
-          <h3>iPAS 考試樣題</h3>
-          <p>114年9月版官方樣題</p>
-        </a>
-      </div>
-    </div>
-
-    <div class="quiz-section">
-      <h2>其他考卷</h2>
-      <p style="color: var(--color-muted); margin-bottom: 1.25rem;">綜合測驗與專題練習</p>
-
-      <div class="quiz-grid">
-        <a href="https://pastpapers.nasirlin.net/?bank=general-quiz" target="_blank" rel="noopener" class="quiz-card">
-          <div class="quiz-badge other">綜合</div>
-          <h3>一般測驗</h3>
-          <p>綜合知識練習</p>
-        </a>
-        <a href="https://pastpapers.nasirlin.net/?bank=web-frontend" target="_blank" rel="noopener" class="quiz-card">
-          <div class="quiz-badge other">前端</div>
-          <h3>前端技術</h3>
-          <p>Web Frontend 測驗</p>
-        </a>
-      </div>
-    </div>
-  </section>
+  <div id="quiz-app">
+    <div id="view-select"></div>
+    <div id="view-quiz" style="display:none"></div>
+    <div id="view-result" style="display:none"></div>
+  </div>
 </BaseLayout>
 
 <style>
-  .quiz-section {
-    margin-bottom: 3rem;
-  }
+  #quiz-app { min-height: 60vh; }
 
-  .quiz-section h2 {
-    font-size: 1.5rem;
+  .cat-heading {
     font-family: var(--font-heading);
-    margin-bottom: 0.25rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2rem 0 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
   }
+  .cat-heading:first-child { margin-top: 0; }
 
   .quiz-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
   }
 
-  .quiz-card {
+  .qcard {
     background: var(--color-bg);
     border: 1px solid var(--color-border);
-    border-radius: 12px;
-    padding: 1.25rem;
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 10px;
+    padding: 1.1rem 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
-
-  .quiz-card:hover {
+  .qcard:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   }
-
-  .quiz-card h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0;
+  .qcard-title { font-weight: 600; font-size: 0.95rem; }
+  .qcard-meta {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
   }
-
-  .quiz-card p {
-    font-size: 0.85rem;
-    color: var(--color-muted);
-    margin: 0;
-  }
-
-  .quiz-badge {
-    display: inline-block;
+  .badge {
     font-size: 0.7rem;
     font-weight: 600;
-    padding: 0.15rem 0.5rem;
+    padding: 0.1rem 0.45rem;
     border-radius: 4px;
     background: var(--color-border);
     color: var(--color-muted);
-    width: fit-content;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
   }
-
-  .quiz-badge.official {
+  .badge-score {
     background: var(--color-accent);
-    color: white;
+    color: var(--color-bg);
   }
 
-  .quiz-badge.sample {
-    background: #10b981;
-    color: white;
+  .quiz-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .quiz-top-left { font-size: 0.9rem; color: var(--color-muted); }
+  .btn-leave {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0.3rem 0.8rem;
+    cursor: pointer;
   }
 
-  .quiz-badge.other {
-    background: #6366f1;
-    color: white;
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
   }
+  .progress-fill {
+    height: 100%;
+    background: var(--color-accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .question-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+    font-family: var(--font-heading);
+  }
+
+  .option-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .option-card:hover:not(.answered) {
+    border-color: var(--color-accent);
+  }
+  .option-card.selected {
+    border-color: var(--color-accent);
+    background: rgba(74,103,65,0.06);
+  }
+  .option-card.correct {
+    border-color: #10b981;
+    background: rgba(16,185,129,0.08);
+  }
+  .option-card.wrong {
+    border-color: #ef4444;
+    background: rgba(239,68,68,0.08);
+  }
+  .option-card.answered { cursor: default; }
+
+  .btn-submit-multi {
+    margin-top: 0.75rem;
+    padding: 0.5rem 1.5rem;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .explanation-box {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--color-border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .btn-next {
+    margin-top: 1rem;
+    padding: 0.5rem 1.5rem;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .result-score {
+    font-size: 3rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+  .result-pct {
+    font-size: 1.2rem;
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+  }
+  .result-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  .result-btns button {
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .result-btns .btn-retry {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+  }
+  .result-btns .btn-back {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .review-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-q { font-size: 0.95rem; margin-bottom: 0.5rem; }
+  .review-q .icon { margin-right: 0.4rem; }
+  .review-opt { font-size: 0.85rem; color: var(--color-muted); padding-left: 1.5rem; }
+  .review-opt.yours { color: var(--color-text); font-weight: 500; }
+  .review-expl {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    padding: 0.6rem;
+    background: var(--color-border);
+    border-radius: 6px;
+  }
+
+  .loading { text-align: center; padding: 4rem 0; color: var(--color-muted); }
 </style>
+
+<script>
+  const HIST_KEY = 'pastpapers-history';
+  function loadHistory() { try { return JSON.parse(localStorage.getItem(HIST_KEY) || '{}'); } catch { return {}; } }
+  function saveHistory(h) { localStorage.setItem(HIST_KEY, JSON.stringify(h)); }
+
+  const $select = document.getElementById('view-select')!;
+  const $quiz = document.getElementById('view-quiz')!;
+  const $result = document.getElementById('view-result')!;
+  let registry: any[] = [];
+  let currentQuiz: any = null;
+  let qIdx = 0;
+  let answers: number[][] = [];
+  let multiSelected: number[] = [];
+  let answered = false;
+
+  function showView(v: string) {
+    $select.style.display = v === 'select' ? '' : 'none';
+    $quiz.style.display = v === 'quiz' ? '' : 'none';
+    $result.style.display = v === 'result' ? '' : 'none';
+  }
+
+  async function init() {
+    $select.innerHTML = '<div class="loading">載入中...</div>';
+    showView('select');
+    try {
+      const r = await fetch('/Diary/questions/registry.json');
+      registry = await r.json();
+    } catch { registry = []; }
+    renderSelect();
+  }
+
+  function renderSelect() {
+    const hist = loadHistory();
+    const cats: Record<string, any[]> = {};
+    registry.forEach(b => { (cats[b.category] = cats[b.category] || []).push(b); });
+    let html = '';
+    for (const [cat, banks] of Object.entries(cats)) {
+      html += `<div class="cat-heading">${cat}</div><div class="quiz-grid">`;
+      banks.forEach(b => {
+        const h = hist[b.bankId];
+        const badge = h ? `<span class="badge badge-score">${h.score}/${h.total}</span>` : '';
+        html += `<div class="qcard" data-bid="${b.bankId}">
+          <div class="qcard-title">${b.bankName}</div>
+          <div class="qcard-meta"><span class="badge">載入中...</span>${badge}</div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+    $select.innerHTML = html;
+    $select.querySelectorAll('.qcard').forEach(c => {
+      c.addEventListener('click', () => startQuiz((c as HTMLElement).dataset.bid!));
+    });
+    registry.forEach(async b => {
+      try {
+        const r = await fetch('/Diary/questions/' + b.bankId + '.json');
+        const d = await r.json();
+        const cards = $select.querySelectorAll(`[data-bid="${b.bankId}"] .badge`);
+        if (cards[0]) cards[0].textContent = d.questions.length + ' 題';
+      } catch {}
+    });
+  }
+
+  async function startQuiz(bankId: string) {
+    showView('quiz');
+    $quiz.innerHTML = '<div class="loading">載入題目...</div>';
+    try {
+      const r = await fetch('/Diary/questions/' + bankId + '.json');
+      currentQuiz = await r.json();
+    } catch { $quiz.innerHTML = '<div class="loading">載入失敗</div>'; return; }
+    qIdx = 0;
+    answers = [];
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const qs = currentQuiz.questions;
+    const q = qs[qIdx];
+    answered = false;
+    multiSelected = [];
+    const pct = Math.round((qIdx / qs.length) * 100);
+    let h = `<div class="quiz-top">
+      <div class="quiz-top-left">第 ${qIdx + 1} / ${qs.length} 題</div>
+      <button class="btn-leave" id="btnLeave">離開測驗</button>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="question-text">${q.question}</div>`;
+    q.options.forEach((opt: string, i: number) => {
+      h += `<div class="option-card" data-idx="${i}">${opt}</div>`;
+    });
+    if (q.type === 'multiple') {
+      h += `<button class="btn-submit-multi" id="btnSubmitMulti" style="display:none">確認送出</button>`;
+    }
+    h += `<div id="feedbackArea"></div>`;
+    $quiz.innerHTML = h;
+    document.getElementById('btnLeave')!.addEventListener('click', () => { showView('select'); renderSelect(); });
+    const cards = $quiz.querySelectorAll('.option-card');
+    if (q.type === 'single') {
+      cards.forEach(c => c.addEventListener('click', () => { if (!answered) submitSingle(parseInt((c as HTMLElement).dataset.idx!)); }));
+    } else {
+      const btnM = document.getElementById('btnSubmitMulti')!;
+      cards.forEach(c => c.addEventListener('click', () => {
+        if (answered) return;
+        const idx = parseInt((c as HTMLElement).dataset.idx!);
+        if (multiSelected.includes(idx)) { multiSelected = multiSelected.filter(x => x !== idx); c.classList.remove('selected'); }
+        else { multiSelected.push(idx); c.classList.add('selected'); }
+        btnM.style.display = multiSelected.length > 0 ? '' : 'none';
+      }));
+      btnM.addEventListener('click', () => { if (multiSelected.length > 0) submitMulti(); });
+    }
+  }
+
+  function submitSingle(idx: number) {
+    answered = true;
+    const q = currentQuiz.questions[qIdx];
+    const correct = q.answer.includes(idx);
+    answers[qIdx] = [idx];
+    const cards = $quiz.querySelectorAll('.option-card');
+    cards.forEach(c => {
+      c.classList.add('answered');
+      const ci = parseInt((c as HTMLElement).dataset.idx!);
+      if (q.answer.includes(ci)) c.classList.add('correct');
+      else if (ci === idx && !correct) c.classList.add('wrong');
+    });
+    showFeedback(q, correct);
+  }
+
+  function submitMulti() {
+    answered = true;
+    const q = currentQuiz.questions[qIdx];
+    const sorted = [...q.answer].sort();
+    const yours = [...multiSelected].sort();
+    const correct = sorted.length === yours.length && sorted.every((v: number, i: number) => v === yours[i]);
+    answers[qIdx] = [...multiSelected];
+    const cards = $quiz.querySelectorAll('.option-card');
+    cards.forEach(c => {
+      c.classList.add('answered');
+      const ci = parseInt((c as HTMLElement).dataset.idx!);
+      if (q.answer.includes(ci)) c.classList.add('correct');
+      else if (multiSelected.includes(ci)) c.classList.add('wrong');
+    });
+    document.getElementById('btnSubmitMulti')!.style.display = 'none';
+    showFeedback(q, correct);
+  }
+
+  function showFeedback(q: any, correct: boolean) {
+    const area = document.getElementById('feedbackArea')!;
+    const icon = correct ? '✅' : '❌';
+    let html = `<div class="explanation-box">${icon} ${q.explanation || '暫無解析'}</div>`;
+    if (qIdx < currentQuiz.questions.length - 1) {
+      html += `<button class="btn-next" id="btnNext">下一題</button>`;
+    } else {
+      html += `<button class="btn-next" id="btnNext">查看結果</button>`;
+    }
+    area.innerHTML = html;
+    document.getElementById('btnNext')!.addEventListener('click', nextOrResult);
+  }
+
+  function nextOrResult() {
+    if (qIdx < currentQuiz.questions.length - 1) { qIdx++; renderQuestion(); }
+    else showResult();
+  }
+
+  function showResult() {
+    const qs = currentQuiz.questions;
+    let score = 0;
+    qs.forEach((q: any, i: number) => {
+      const a = (answers[i] || []).sort();
+      const c = [...q.answer].sort();
+      if (a.length === c.length && a.every((v: number, j: number) => v === c[j])) score++;
+    });
+    const hist = loadHistory();
+    hist[currentQuiz.bankId] = { score, total: qs.length, date: new Date().toISOString().slice(0, 10) };
+    saveHistory(hist);
+    const pct = Math.round((score / qs.length) * 100);
+    let h = `<div class="result-header">
+      <div class="result-score">${score} / ${qs.length}</div>
+      <div class="result-pct">${pct}%</div>
+      <div class="result-btns">
+        <button class="btn-retry" id="btnRetry">重新測驗</button>
+        <button class="btn-back" id="btnBack">返回選單</button>
+      </div>
+    </div>`;
+    qs.forEach((q: any, i: number) => {
+      const a = (answers[i] || []).sort();
+      const c = [...q.answer].sort();
+      const ok = a.length === c.length && a.every((v: number, j: number) => v === c[j]);
+      const icon = ok ? '<span class="icon" style="color:#10b981">✓</span>' : '<span class="icon" style="color:#ef4444">✗</span>';
+      const yourText = (answers[i] || []).map((x: number) => q.options[x]).join('、') || '未作答';
+      const correctText = q.answer.map((x: number) => q.options[x]).join('、');
+      h += `<div class="review-item">
+        <div class="review-q">${icon} 第${i + 1}題：${q.question}</div>
+        <div class="review-opt${ok ? '' : ' yours'}">你的答案：${yourText}</div>
+        ${!ok ? `<div class="review-opt" style="color:#10b981">正確答案：${correctText}</div>` : ''}
+        <div class="review-expl">${q.explanation || ''}</div>
+      </div>`;
+    });
+    $result.innerHTML = h;
+    showView('result');
+    document.getElementById('btnRetry')!.addEventListener('click', () => startQuiz(currentQuiz.bankId));
+    document.getElementById('btnBack')!.addEventListener('click', () => { showView('select'); renderSelect(); });
+  }
+
+  init();
+</script>
