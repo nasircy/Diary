@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="學習記錄">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" is:inline></script>
   <section>
     <h1>學習記錄</h1>
     <p style="color: var(--color-muted); margin-bottom: 2rem;">記錄我的學習進度，還有一些筆記，幫助我思考。</p>
@@ -446,7 +447,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 
   <script>
-    import Swal from 'sweetalert2';
+    declare const Swal: any;
 
     /* ============================================================
        TOEIC VOC Quiz
